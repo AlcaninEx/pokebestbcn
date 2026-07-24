@@ -286,6 +286,12 @@ body.dark .filtro-textarea{background:#1e1e1e;color:#eee}
 .filtro-tog{padding:11px 10px;border-radius:10px;border:1.5px solid #ddd;background:#fff;font-size:12px;font-weight:700;color:#666;cursor:pointer;text-align:center;transition:all .15s}
 body.dark .filtro-tog{background:#1e1e1e;color:#aaa;border-color:#444}
 .filtro-tog.on{background:#e3f2fd;border-color:#1565c0;color:#0d47a1}
+.rr-switch-row{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1.5px solid #e0e0e0;border-radius:10px;padding:9px 12px;margin-bottom:10px;cursor:pointer;user-select:none}
+.rr-switch-row .rr-switch-lbl{font-size:12.5px;font-weight:700;color:#444}
+.rr-switch{position:relative;width:42px;height:24px;border-radius:12px;background:#ccc;flex-shrink:0;transition:background .18s}
+.rr-switch::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .18s}
+.rr-switch.on{background:#1565c0}
+.rr-switch.on::after{transform:translateX(18px)}
 body.dark .filtro-tog.on{background:#0d2a44;color:#90caf9}
 .filtro-add-row{display:flex;gap:8px;padding:0 14px;align-items:stretch}
 .filtro-add-input{flex:1;padding:10px;border:2px solid #ddd;border-radius:10px;font-size:13px;color:#222;background:#fff}
@@ -419,7 +425,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
       <button class="auth-btn" onclick="doGlobalLogin()" data-i18n="enter">Entrar</button>
       <p style="text-align:center;font-size:13px;color:#666;margin-top:14px"><span data-i18n="no_account">¿No tienes cuenta?</span> <a href="#" onclick="showGlobalRegister();return false" style="color:#CC0000;font-weight:700" data-i18n="create_account">Crear cuenta</a></p>
     </div>
-    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.s</p>
+    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.t</p>
   </div>
 </div>
 
@@ -559,7 +565,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
           </button>
         </div>
         <button class="home-btn-small" onclick="openNovedades()" style="background:#ede7f6;border-color:#5e35b1;color:#4527a0">
-          <span data-i18n="news">🆕 Novedades</span> · v0.985.s
+          <span data-i18n="news">🆕 Novedades</span> · v0.985.t
         </button>
       </div>
 
@@ -1264,6 +1270,10 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
       <button class="tab active" id="rr-tab-grunts" onclick="switchRocketTab('grunts')" data-i18n="rr_tab_grunts">👤 Reclutas</button>
       <button class="tab" id="rr-tab-leaders" onclick="switchRocketTab('leaders')" data-i18n="rr_tab_leaders">👑 Jefe y Líderes</button>
     </div>
+    <div class="rr-switch-row" id="rr-hide-unused-btn" role="switch" aria-pressed="false" onclick="rrToggleHideUnused()">
+      <span class="rr-switch-lbl" data-i18n="rr_hide_unused">👁️ Ocultar no usados</span>
+      <span class="rr-switch" id="rr-hide-unused-toggle"></span>
+    </div>
     <div id="rr-list"></div>
   </div>
 </div>
@@ -1388,10 +1398,19 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
     <h1 data-i18n="news">🆕 Novedades</h1>
   </div>
   <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:24px">
-    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.s</b></p>
+    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.t</b></p>
 
     <div class="nov-version nov-item-current">
-      <div class="nov-version-head"><span class="nov-version-num">v0.985.s · actual</span><span class="nov-version-tag">Fix: seleccionar a cualquier miembro para comerciar</span></div>
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.t · actual</span><span class="nov-version-tag">Rocket Rewards: retratos, frases y filtro</span></div>
+      <div class="nov-list">
+        <div class="nov-item"><span>🖼️</span><span>Añadidos los retratos oficiales del Jefe y los Líderes (Giovanni, Cliff, Arlo, Sierra) junto a su frase.</span></div>
+        <div class="nov-item"><span>🇬🇧</span><span>Corregidas las frases en inglés de los reclutas: ahora usan el texto oficial del juego por tipo (verificado con fuentes), en vez de una traducción libre.</span></div>
+        <div class="nov-item"><span>👁️</span><span>Nuevo interruptor "Ocultar no usados": al activarlo, la pantalla deja solo los Pokémon que están en tus equipos (con sus IVs si los tienen) y los que aún te faltan, ocultando el resto.</span></div>
+      </div>
+    </div>
+
+    <div class="nov-version">
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.s</span><span class="nov-version-tag">Fix: seleccionar a cualquier miembro para comerciar</span></div>
       <div class="nov-list">
         <div class="nov-item"><span>🐛</span><span>Corregido: algunos miembros (p.ej. el administrador) no aparecían en el desplegable de "comerciar con" del Filtro Lucky aunque sí se les viera en Miembros. Ahora el desplegable lista a todos los miembros de la comunidad igual que la pantalla de Miembros, sin depender de coincidencias exactas de nombre.</span></div>
       </div>
@@ -6107,28 +6126,38 @@ const RR_QUOTES_EN = {
   'Cliff': "I'll do anything for Team GO Rocket.",
   'Arlo': "Arrogance leads to failure.",
   'Sierra': "I hope you like the taste of defeat!",
+  // Frases oficiales del juego en inglés (los "tells" por tipo del recluta), verificadas
+  // contra la wiki de Pokémon GO / guías de reclutas 2026.
   'Recluta ♂ tipo Normal': "Normal doesn't mean weak.",
-  'Recluta ♀ tipo Fuego': "Do you know how hot a Pokémon's fire breath can get?",
+  'Recluta ♀ tipo Fuego': "Do you know how hot Pokémon fire breath can get?",
   'Recluta ♀ tipo Agua': "These waters are treacherous!",
   'Recluta ♂ tipo Agua': "These waters are treacherous!",
-  'Recluta ♀ tipo Eléctrico': "Get ready to be amazed!",
-  'Recluta ♂ tipo Planta': "Don't mess with us!",
-  'Recluta ♀ tipo Hielo': "Cold can paralyze you, didn't you know?",
-  'Recluta ♀ tipo Lucha': "These muscles aren't just for show.",
-  'Recluta ♀ tipo Veneno': "In position and ready to attack!",
-  'Recluta ♂ tipo Tierra': "I'll make you eat dust!",
-  'Recluta ♀ tipo Volador': "My bird Pokémon wants to battle you!",
-  'Recluta ♂ tipo Psíquico': "Are you scared of psychics using an invisible power?",
-  'Recluta ♂ tipo Bicho': "Come on, my mighty Bug-type Pokémon!",
-  'Recluta ♂ tipo Roca': "I'm as strong as a rock!",
-  'Recluta ♂ tipo Fantasma': "Heh heh heh...",
-  'Recluta ♀ tipo Dragón': "GRRR! What did you think of that?",
-  'Recluta ♀ tipo Siniestro': "Wherever there's light, there are also shadows...",
+  'Recluta ♀ tipo Eléctrico': "Get ready to be shocked!",
+  'Recluta ♂ tipo Planta': "Don't tangle with us!",
+  'Recluta ♀ tipo Hielo': "You're gonna be frozen in your tracks.",
+  'Recluta ♀ tipo Lucha': "This buff physique isn't just for show!",
+  'Recluta ♀ tipo Veneno': "Coiled and ready to strike!",
+  'Recluta ♂ tipo Tierra': "You'll be defeated into the ground!",
+  'Recluta ♀ tipo Volador': "Battle against my Flying-type Pokémon!",
+  'Recluta ♂ tipo Psíquico': "Are you scared of psychics that use unseen power?",
+  'Recluta ♂ tipo Bicho': "Go, my super bug Pokémon!",
+  'Recluta ♂ tipo Roca': "Let's rock and roll!",
+  'Recluta ♂ tipo Fantasma': "Ke... ke... ke...",
+  'Recluta ♀ tipo Dragón': "ROAR! ...How'd that sound?",
+  'Recluta ♀ tipo Siniestro': "Wherever there is light, there is also shadow.",
   'Recluta ♂ tipo Acero': "You're no match for my iron will!",
-  'Recluta ♀ tipo Hada': "Look how cute my Pokémon is!",
+  'Recluta ♀ tipo Hada': "Check out my cute Pokémon!",
   'Recluta ♂ (genérico)': "Winning is for winners.",
   'Recluta ♀ (genérica)': "Winning is for winners.",
   'Recluta ♀ señuelo': "Got you there, rookie.",
+};
+// Retratos oficiales del jefe/líderes (ficheros en la raíz del proyecto). Para los reclutas
+// se usa el retrato genérico hombre/mujer de rrGenderIcon.
+const RR_PORTRAIT = {
+  'Giovanni': 'boss-giovanni.webp',
+  'Cliff': 'leader-cliff.webp',
+  'Arlo': 'leader-arlo.webp',
+  'Sierra': 'leader-sierra.webp',
 };
 const RR_ROLE_EN = {
   'Jefe del Team GO Rocket': 'Team GO Rocket Boss',
@@ -6160,9 +6189,24 @@ const RR_NAME_EN = {
 };
 let _rrTab = 'grunts';
 let _rrPinned = {};
+let _rrHideUnused = false;
 function rrLoadPinned(){
   const p = goc(ST.cur);
   _rrPinned = p.rrPinned || {};
+  _rrHideUnused = !!p.rrHideUnused;
+}
+function rrToggleHideUnused(){
+  _rrHideUnused = !_rrHideUnused;
+  const p = goc(ST.cur);
+  p.rrHideUnused = _rrHideUnused;
+  save();
+  renderRocketRewards();
+}
+// ¿Este personaje tiene alguna especie que sigas (en tus equipos)? Si no, con el filtro
+// "Ocultar no usados" activo su tarjeta no se muestra.
+function rrHasTracked(c, p){
+  if(!p) return false;
+  return c.s.some(opts => opts.some(m => rrOwnedInfo(p, m.n)));
 }
 function rrSavePinned(){
   const p = goc(ST.cur);
@@ -6198,13 +6242,16 @@ function rrGenderIconError(img, isF){
   const symbol = isF ? '♀' : '♂';
   img.outerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span style="position:relative;left:-2px;top:8px;font-size:11px;font-weight:900;color:${color}">${symbol}</span>`;
 }
-function rrGenderIcon(g){
-  if(!g) return '';
+function rrGenderIcon(g, c){
+  // Si es un líder/jefe con retrato propio, lo usamos; si no, el retrato genérico por sexo.
+  const portrait = c && RR_PORTRAIT[c.n];
+  if(!g && !portrait) return '';
   const isF = g==='f';
   const color = isF ? '#ad1457' : '#1565c0';
   const bg = isF ? '#fce4ec' : '#e3f2fd';
-  const src = isF ? 'female-grunt.webp' : 'male-grunt.webp';
-  return `<div title="${isF?tr('rr_female_grunt','Recluta mujer'):tr('rr_male_grunt','Recluta hombre')}" style="width:34px;height:34px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid ${color};overflow:hidden">
+  const src = portrait || (isF ? 'female-grunt.webp' : 'male-grunt.webp');
+  const title = portrait ? (c.n) : (isF?tr('rr_female_grunt','Recluta mujer'):tr('rr_male_grunt','Recluta hombre'));
+  return `<div title="${title}" style="width:34px;height:34px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid ${color};overflow:hidden">
     <img src="${src}" alt="" style="width:100%;height:100%;object-fit:cover" onerror="rrGenderIconError(this,${isF})">
   </div>`;
 }
@@ -6220,6 +6267,8 @@ function rrCardHtml(c, pinned){
       // Si no está en ningún equipo no se muestra nada: no es "no obtenido", simplemente
       // no es algo que estés buscando con esta pantalla.
       const info = p ? rrOwnedInfo(p, m.n) : null;
+      // Filtro "Ocultar no usados": si esta especie no está en tus equipos, se oculta.
+      if(_rrHideUnused && !info) return '';
       let tag = '';
       if (info && !info.owned) {
         tag = `<span style="font-size:9px;font-weight:700;color:#e65100;background:#fff3e0;border-radius:5px;padding:1px 5px">${tr('rr_not_obtained','🆕 No obtenido')}</span>`;
@@ -6236,6 +6285,8 @@ function rrCardHtml(c, pinned){
         </div>
       </div>`;
     }).join('');
+    // Con el filtro activo, si el slot se queda sin Pokémon visibles, no se muestra.
+    if(_rrHideUnused && !monsHtml) return '';
     return `<div style="margin-bottom:6px">
       <div style="font-size:10.5px;font-weight:700;color:#888;margin-bottom:3px">Slot ${i+1}${opts.length>1?' ('+tr('rr_possible','posibles')+')':''}</div>
       <div style="display:flex;flex-wrap:wrap;gap:6px">${monsHtml}</div>
@@ -6243,7 +6294,7 @@ function rrCardHtml(c, pinned){
   }).join('');
   const _key=(c.n||'').replace(/'/g,"\\'");
   const pinBtn = `<button onclick="event.stopPropagation();rrTogglePin('${_key}')" title="${tr('rr_pin_title','Fijar')}" style="background:none;border:none;cursor:pointer;font-size:16px;line-height:1;padding:2px 4px;opacity:${pinned?1:.35}">📌</button>`;
-  const genderIcon = rrGenderIcon(rrGender(c));
+  const genderIcon = rrGenderIcon(rrGender(c), c);
   const isEn = getLang()==='en';
   const dispName = isEn && RR_NAME_EN[c.n] ? RR_NAME_EN[c.n] : c.n;
   const dispRole = c.r ? ((isEn && RR_ROLE_EN[c.r]) ? RR_ROLE_EN[c.r] : c.r) : '';
@@ -6266,12 +6317,22 @@ function renderRocketRewards(){
   if(!box) return;
   rrLoadPinned();
   const p = gp(ST.cur);
-  const list = (RR_DATA[_rrTab] || []).slice();
+  let list = (RR_DATA[_rrTab] || []).slice();
+  // Filtro "Ocultar no usados": quitamos los personajes que no tienen ninguna especie
+  // que sigas en tus equipos (no aportan nada con el filtro activo).
+  if(_rrHideUnused && p) list = list.filter(c=>rrHasTracked(c,p));
+  const btn = document.getElementById('rr-hide-unused-btn');
+  if(btn) btn.setAttribute('aria-pressed', _rrHideUnused ? 'true':'false');
+  const tgl = document.getElementById('rr-hide-unused-toggle');
+  if(tgl) tgl.classList.toggle('on', _rrHideUnused);
   const pinned = list.filter(c=>_rrPinned[c.n]);
   const rest = list.filter(c=>!_rrPinned[c.n]);
   if(_rrTab==='grunts' && p) rest.sort((a,b)=>rrPriorityScore(a,p)-rrPriorityScore(b,p));
   const pinnedHtml = pinned.length ? `<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:#ff9800;margin-bottom:4px">${tr('rr_pinned_header','📌 FIJADOS')}</div>${pinned.map(c=>rrCardHtml(c,true)).join('')}</div>` : '';
-  box.innerHTML = pinnedHtml + rest.map(c=>rrCardHtml(c,false)).join('');
+  const bodyHtml = pinnedHtml + rest.map(c=>rrCardHtml(c,false)).join('');
+  box.innerHTML = (_rrHideUnused && !list.length)
+    ? `<p style="text-align:center;color:#aaa;font-size:12px;padding:24px 12px">${tr('rr_none_used','Ninguno de estos Pokémon está en tus equipos todavía.')}</p>`
+    : bodyHtml;
 }
 function openRocketRewards() {
   renderRocketRewards();
@@ -7904,7 +7965,7 @@ document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==
 const I18N={
   es:{login_sub:'Inicia sesión con tu cuenta',user:'Usuario',pass:'Contraseña',user_ph:'tu usuario',pass_ph:'tu contraseña',remember:'Recordarme en este dispositivo',disclaimer:'TrackDex es una aplicación de fans sin ánimo de lucro, no afiliada a Nintendo, Niantic, The Pokémon Company ni Game Freak. Pokémon y todos los nombres e imágenes relacionados son marcas de sus respectivos propietarios.',privacy:'Política de privacidad',enter:'Entrar',no_account:'¿No tienes cuenta?',create_account:'Crear cuenta',reg_sub:'Una sola vez, para todas tus comunidades',user_ph2:'letras, números, - o _',pass_ph2:'mínimo 6 caracteres',pass2:'Repite la contraseña',pass2_ph:'repite la contraseña',have_account:'¿Ya tienes cuenta?',signin:'Iniciar sesión',
     communities:'Comunidades',logout:'Salir',create_comm:'➕ Crear comunidad',comm_name:'Nombre de la comunidad',comm_pass:'Contraseña de la comunidad',comm_alias:'Tu alias en esta comunidad',create:'Crear',join_sub:'Elige tu alias y escribe la contraseña',alias_ph:'cómo te verán aquí',pass_only:'contraseña',
-    my_pokemon:'⚔️ Mis Pokemons',raid_pk:'Pokémon Incursiones',dmax_pk:'Pokémon Dynamax',rankings:'Rankings DPS',top50:'Top 50 por tipo',type_calc:'🔥 Calculadora de Tipos',megas:'🍬 Megas',legacy:'⭐ Legacy',target:'🎯 Pokémon Objetivo',daily:'📋 Diarias',stops:'🎁 Poképaradas!',trackers:'🏆 Trackers',community:'🏘️ Comunidad',news:'🆕 Novedades',more_tools:'➕ Más Herramientas',rocket_rewards:'🚀 Rocket Rewards',rocket_rewards_desc:'Miembros del Team GO Rocket, sus frases y los Pokémon Oscuros que puedes conseguir al derrotarlos.',rr_tab_leaders:'👑 Jefe y Líderes',rr_tab_grunts:'👤 Reclutas',
+    my_pokemon:'⚔️ Mis Pokemons',raid_pk:'Pokémon Incursiones',dmax_pk:'Pokémon Dynamax',rankings:'Rankings DPS',top50:'Top 50 por tipo',type_calc:'🔥 Calculadora de Tipos',megas:'🍬 Megas',legacy:'⭐ Legacy',target:'🎯 Pokémon Objetivo',daily:'📋 Diarias',stops:'🎁 Poképaradas!',trackers:'🏆 Trackers',community:'🏘️ Comunidad',news:'🆕 Novedades',more_tools:'➕ Más Herramientas',rocket_rewards:'🚀 Rocket Rewards',rocket_rewards_desc:'Miembros del Team GO Rocket, sus frases y los Pokémon Oscuros que puedes conseguir al derrotarlos.',rr_tab_leaders:'👑 Jefe y Líderes',rr_tab_grunts:'👤 Reclutas',rr_hide_unused:'👁️ Ocultar no usados',rr_none_used:'Ninguno de estos Pokémon está en tus equipos todavía.',
     profile:'👤 Perfil',app_section:'ℹ️ Aplicación',guide:'📖 Guía TrackDex',rename_teams:'✏️ Cambiar nombres de tus equipos',change_pass:'🔑 Cambiar contraseña',privacy_btn:'🔒 Política de privacidad',danger:'⚠️ Zona de peligro',del_team:'🗑️ Borrar un equipo de Pokémon (2, 3 o 4)',del_raid:'🗑️ Borrar todos tus Pokémon de Incursión',del_dmax:'🗑️ Borrar todos tus Pokémon Dynamax',del_account:'☠️ Borrar mi cuenta y todos mis datos',
     community_t:'🏘️ Comunidad',members:'👥 Miembros de la Comunidad',chat:'💬 Chat de comunidad',switch_comm:'🔄 Cambiar comunidad',
     close:'Cerrar',understood:'Entendido',
@@ -7929,7 +7990,7 @@ const I18N={
   },
   en:{login_sub:'Sign in to your account',user:'Username',pass:'Password',user_ph:'your username',pass_ph:'your password',remember:'Remember me on this device',disclaimer:'TrackDex is a non-profit fan app, not affiliated with Nintendo, Niantic, The Pokémon Company or Game Freak. Pokémon and all related names and images are trademarks of their respective owners.',privacy:'Privacy policy',enter:'Sign in',no_account:"Don't have an account?",create_account:'Create account',reg_sub:'Just once, for all your communities',user_ph2:'letters, numbers, - or _',pass_ph2:'at least 6 characters',pass2:'Repeat password',pass2_ph:'repeat your password',have_account:'Already have an account?',signin:'Sign in',
     communities:'Communities',logout:'Sign out',create_comm:'➕ Create community',comm_name:'Community name',comm_pass:'Community password',comm_alias:'Your nickname in this community',create:'Create',join_sub:'Pick your nickname and enter the password',alias_ph:'how others will see you',pass_only:'password',
-    my_pokemon:'⚔️ My Pokémon',raid_pk:'Raid Pokémon',dmax_pk:'Dynamax Pokémon',rankings:'DPS Rankings',top50:'Top 50 per type',type_calc:'🔥 Type Calculator',megas:'🍬 Megas',legacy:'⭐ Legacy',target:'🎯 Target Pokémon',daily:'📋 Dailies',stops:'🎁 PokéStops!',trackers:'🏆 Trackers',community:'🏘️ Community',news:'🆕 News',more_tools:'➕ More tools',rocket_rewards:'🚀 Rocket Rewards',rocket_rewards_desc:'Team GO Rocket members, their lines, and the Shadow Pokémon you can get by defeating them.',rr_tab_leaders:'👑 Boss & Leaders',rr_tab_grunts:'👤 Grunts',
+    my_pokemon:'⚔️ My Pokémon',raid_pk:'Raid Pokémon',dmax_pk:'Dynamax Pokémon',rankings:'DPS Rankings',top50:'Top 50 per type',type_calc:'🔥 Type Calculator',megas:'🍬 Megas',legacy:'⭐ Legacy',target:'🎯 Target Pokémon',daily:'📋 Dailies',stops:'🎁 PokéStops!',trackers:'🏆 Trackers',community:'🏘️ Community',news:'🆕 News',more_tools:'➕ More tools',rocket_rewards:'🚀 Rocket Rewards',rocket_rewards_desc:'Team GO Rocket members, their lines, and the Shadow Pokémon you can get by defeating them.',rr_tab_leaders:'👑 Boss & Leaders',rr_tab_grunts:'👤 Grunts',rr_hide_unused:'👁️ Hide unused',rr_none_used:'None of these Pokémon are in your teams yet.',
     profile:'👤 Profile',app_section:'ℹ️ App',guide:'📖 TrackDex guide',rename_teams:'✏️ Rename your teams',change_pass:'🔑 Change password',privacy_btn:'🔒 Privacy policy',danger:'⚠️ Danger zone',del_team:'🗑️ Delete a Pokémon team (2, 3 or 4)',del_raid:'🗑️ Delete all your Raid Pokémon',del_dmax:'🗑️ Delete all your Dynamax Pokémon',del_account:'☠️ Delete my account and all my data',
     community_t:'🏘️ Community',members:'👥 Community members',chat:'💬 Community chat',switch_comm:'🔄 Switch community',
     close:'Close',understood:'Got it',
