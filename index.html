@@ -425,7 +425,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
       <button class="auth-btn" onclick="doGlobalLogin()" data-i18n="enter">Entrar</button>
       <p style="text-align:center;font-size:13px;color:#666;margin-top:14px"><span data-i18n="no_account">¿No tienes cuenta?</span> <a href="#" onclick="showGlobalRegister();return false" style="color:#CC0000;font-weight:700" data-i18n="create_account">Crear cuenta</a></p>
     </div>
-    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.t</p>
+    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.u</p>
   </div>
 </div>
 
@@ -565,7 +565,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
           </button>
         </div>
         <button class="home-btn-small" onclick="openNovedades()" style="background:#ede7f6;border-color:#5e35b1;color:#4527a0">
-          <span data-i18n="news">🆕 Novedades</span> · v0.985.t
+          <span data-i18n="news">🆕 Novedades</span> · v0.985.u
         </button>
       </div>
 
@@ -1398,10 +1398,18 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
     <h1 data-i18n="news">🆕 Novedades</h1>
   </div>
   <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:24px">
-    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.t</b></p>
+    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.u</b></p>
 
     <div class="nov-version nov-item-current">
-      <div class="nov-version-head"><span class="nov-version-num">v0.985.t · actual</span><span class="nov-version-tag">Rocket Rewards: retratos, frases y filtro</span></div>
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.u · actual</span><span class="nov-version-tag">Base perfecta automática + filtro fondo especial</span></div>
+      <div class="nov-list">
+        <div class="nov-item"><span>💎</span><span>Al asignar IVs 15/15/15 o 15/15/14 a un Pokémon (no Oscuro), se marca automáticamente como "Base perfecta". Solo la activa, nunca la quita.</span></div>
+        <div class="nov-item"><span>🎛️</span><span>La opción "Quitar con fondo" del filtro ahora excluye también los de fondo especial (&!fondo&!fondoespecial), no solo &!fondo.</span></div>
+      </div>
+    </div>
+
+    <div class="nov-version">
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.t</span><span class="nov-version-tag">Rocket Rewards: retratos, frases y filtro</span></div>
       <div class="nov-list">
         <div class="nov-item"><span>🖼️</span><span>Añadidos los retratos oficiales del Jefe y los Líderes (Giovanni, Cliff, Arlo, Sierra) junto a su frase.</span></div>
         <div class="nov-item"><span>🇬🇧</span><span>Corregidas las frases en inglés de los reclutas: ahora usan el texto oficial del juego por tipo (verificado con fuentes), en vez de una traducción libre.</span></div>
@@ -3597,6 +3605,20 @@ function togBasePerfect(id,v) {
   save();
   if(ST.albumTab==='dmax') renderAlbumDmax(); else renderAlbum();
 }
+// Al asignar IVs casi perfectos (15/15/15 o 15/15/14) marcamos "Base perfecta"
+// automáticamente. No se aplica a los Pokémon Oscuros (no se pueden intercambiar) y solo
+// activa la marca, nunca la quita. Devuelve true si la ha activado (para re-renderizar).
+function autoBasePerfectFromIVs(p,id){
+  if(!p||!p.pk||!p.pk[id]) return false;
+  if(isShadowEntry(id,p)) return false;
+  const a=p.pk[id].ivAtk||0, d=p.pk[id].ivDef||0, h=p.pk[id].ivHp||0;
+  if(a===15 && d===15 && (h===15||h===14) && !p.pk[id].basePerfect){
+    p.pk[id].basePerfect=true;
+    syncLinked(p,id,{basePerfect:true});
+    return true;
+  }
+  return false;
+}
 function togDmaxCopy(id,v) {
   // Marca si ESTA copia concreta de Incursión también se usa como copia Dynamax
   // (comparte hueco con el equipo Dynamax en Pokémon Objetivo). Tres estados posibles:
@@ -3681,7 +3703,9 @@ function updIV(id,s,v) {
     if(el)el.innerHTML=n+'<span style="font-size:10px;color:#888;font-weight:400"> ('+pct+'%)</span>';
   }
   syncLinked(p,id,{ivAtk:p.pk[id].ivAtk||0, ivDef:p.pk[id].ivDef||0, ivHp:p.pk[id].ivHp||0});
+  const marked=autoBasePerfectFromIVs(p,id);
   save();
+  if(marked){ if(ST.albumTab==='dmax') renderAlbumDmax(); else renderAlbum(); }
 }
 function togCard(id) { ST.expanded=ST.expanded===id?null:id; if(ST.albumTab==='dmax') renderAlbumDmax(); else renderAlbum(); }
 
@@ -5753,9 +5777,10 @@ function bivApplyCmp(id){
   p.pk[id].ivAtk=a; p.pk[id].ivDef=d; p.pk[id].ivHp=h;
   if(!p.pk[id].owned) p.pk[id].owned=true;
   syncLinked(p,id,{ivAtk:a,ivDef:d,ivHp:h,owned:true});
+  const marked=autoBasePerfectFromIVs(p,id);
   save();
   ST.bivCmp=null;
-  showToast('✅ IVs actualizados a '+a+'/'+d+'/'+h,'ok');
+  showToast('✅ IVs actualizados a '+a+'/'+d+'/'+h+(marked?' · 💎 Base perfecta':''),'ok');
   renderBestIvs();
 }
 function bivCmpCalc(id){
@@ -6374,7 +6399,7 @@ const FILTRO_SUFFIXES = [
   {label:'Quitar oscuros', suffix:'&!oscuro'},
   {label:'Quitar dinamax', suffix:'&!dinamax'},
   {label:'Quitar Variocolor', suffix:'&!variocolor'},
-  {label:'Quitar con fondo', suffix:'&!fondo'},
+  {label:'Quitar con fondo', suffix:'&!fondo&!fondoespecial'},
   {label:'Quitar tamaños (XXS / XXL)', suffix:'&!xxs&!xxl', full:true},
 ];
 let _filtroBaseByCat = {viernes:'', resto:''};
