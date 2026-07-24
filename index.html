@@ -419,7 +419,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
       <button class="auth-btn" onclick="doGlobalLogin()" data-i18n="enter">Entrar</button>
       <p style="text-align:center;font-size:13px;color:#666;margin-top:14px"><span data-i18n="no_account">¿No tienes cuenta?</span> <a href="#" onclick="showGlobalRegister();return false" style="color:#CC0000;font-weight:700" data-i18n="create_account">Crear cuenta</a></p>
     </div>
-    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.j</p>
+    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.k</p>
   </div>
 </div>
 
@@ -559,7 +559,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
           </button>
         </div>
         <button class="home-btn-small" onclick="openNovedades()" style="background:#ede7f6;border-color:#5e35b1;color:#4527a0">
-          <span data-i18n="news">🆕 Novedades</span> · v0.985.j
+          <span data-i18n="news">🆕 Novedades</span> · v0.985.k
         </button>
       </div>
 
@@ -1387,10 +1387,18 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
     <h1 data-i18n="news">🆕 Novedades</h1>
   </div>
   <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:24px">
-    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.j</b></p>
+    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.k</b></p>
 
     <div class="nov-version nov-item-current">
-      <div class="nov-version-head"><span class="nov-version-num">v0.985.j · actual</span><span class="nov-version-tag">Copias Dinamax: rediseño</span></div>
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.k · actual</span><span class="nov-version-tag">Comerciar contigo mismo + delegar admin</span></div>
+      <div class="nov-list">
+        <div class="nov-item"><span>🙋</span><span>En "Crea tu filtro", el selector de "con quién comerciar" ahora incluye la opción "Yo": muestra el Filtro Lucky (Bases) calculado sobre tu propio perfil, útil para gestionar tus Pokémon aunque no vayas a comerciar con nadie ahora mismo.</span></div>
+        <div class="nov-item"><span>🔑</span><span>El administrador de una comunidad ya puede delegar su puesto a otro miembro desde la lista de Miembros (botón 🔑 "Hacer administrador").</span></div>
+      </div>
+    </div>
+
+    <div class="nov-version">
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.j</span><span class="nov-version-tag">Copias Dinamax: rediseño</span></div>
       <div class="nov-list">
         <div class="nov-item"><span>🐛</span><span>Corregido: al borrar una ficha de Incursión o Dynamax y volver a añadirla, se podía "quedar pegada" con los datos (IVs, obtenido, al máximo, enlace) de la copia anterior ya borrada. Ahora borrar una ficha resetea siempre todos sus datos.</span></div>
         <div class="nov-item"><span>⚡</span><span>Nuevo sistema de "token copia" para "¿Es Dinamax?": al marcar "Sí" en una copia de Incursión, queda como copia disponible para la próxima ficha Dynamax de esa especie que añadas. Al añadirla, se reclama automáticamente la copia de mejores IVs entre las disponibles. Si borras esa ficha Dynamax, la copia vuelve a quedar libre para la siguiente.</span></div>
@@ -6059,7 +6067,11 @@ function populateTradeWithSelects(selectedName) {
   // Solo miembros reales de la comunidad (evita perfiles huérfanos con ids raros)
   const memberAliases = new Set(Object.values((ST.currentCommunity && ST.currentCommunity.members) || {}).map(m => String(m.alias)));
   const names = (ST.profiles || []).map(p => p.name).filter(n => n !== ST.cur && memberAliases.has(n));
+  // "Comerciar con... Yo": permite ver el Filtro Lucky calculado sobre tu propio
+  // perfil (útil para gestionar tus propios Pokémon aunque no vayas a comerciar
+  // con nadie más ahora mismo).
   const optsHtml = '<option value="">Selecciona un entrenador...</option>' +
+    `<option value="${ST.cur}"${ST.cur===selectedName?' selected':''}>🙋 Yo</option>` +
     names.map(n => `<option value="${n}"${n===selectedName?' selected':''}>${n}</option>`).join('');
   const selInitial = document.getElementById('filtro-trade-with-select-initial');
   const selTop = document.getElementById('filtro-trade-with-select');
@@ -6082,7 +6094,7 @@ function loadViernesForTrainer(name) {
   document.getElementById('filtro-viernes-locked').style.display = 'none';
   document.getElementById('filtro-viernes-unlocked').style.display = 'block';
   document.getElementById('filtro-trade-with-label').style.display = 'block';
-  document.getElementById('filtro-trade-with-name').textContent = name;
+  document.getElementById('filtro-trade-with-name').textContent = (name===ST.cur) ? '🙋 Yo' : name;
 }
 function onTradeWithInitialSelect() {
   const name = document.getElementById('filtro-trade-with-select-initial').value;
@@ -7680,6 +7692,25 @@ async function kickMember(uid){
   showToast('👢 '+alias+' ha sido expulsado');
   renderMembers();
 }
+// El admin actual de la comunidad (o el admin global de la app) puede delegar el
+// rol de administrador a otro miembro. Se actualiza tanto el ownerId (que es lo
+// que de verdad se usa para comprobar permisos en toda la app) como el flag
+// isOwner de cada miembro (solo se usa para mostrar la etiqueta "(admin com.)"
+// y para proteger al admin de ser expulsado).
+async function delegateAdmin(uid){
+  const c=ST.currentCommunity; if(!c||!c.members||!c.members[uid]) return;
+  const iAmOwner = c.ownerId===ST.globalUserId || isAdminUser(ST.globalUserId);
+  if(!iAmOwner){ showToast('Solo el administrador actual puede delegar'); return; }
+  if(uid===ST.globalUserId){ showToast('Ya eres el administrador'); return; }
+  const alias=c.members[uid].alias||uid;
+  if(!confirm('¿Hacer a "'+alias+'" el nuevo administrador de "'+(c.displayName||c.id)+'"?\n\nDejarás de ser administrador de esta comunidad (solo el nuevo admin podría devolverte el puesto).')) return;
+  Object.keys(c.members).forEach(k=>{ if(c.members[k]) c.members[k].isOwner=(k===uid); });
+  c.ownerId=uid;
+  try{ await db.collection('communities').doc(c.id).set(c); }
+  catch(e){ showToast('Error al delegar: '+(e.message||e)); return; }
+  showToast('🔑 '+alias+' es ahora el administrador de la comunidad');
+  renderMembers();
+}
 function showMembers(){
   document.getElementById('home-menu').style.display='none';
   document.getElementById('home-profile-section').style.display='';
@@ -7706,9 +7737,10 @@ function renderMembers(){
     const btn = isMe ? 'Inicio' : 'Ver';
     const iAmOwner = ST.currentCommunity && (ST.currentCommunity.ownerId===ST.globalUserId || isAdminUser(ST.globalUserId));
     const kickBtn = (iAmOwner && !isMe && !(m&&m.isOwner)) ? '<button class="del-btn" title="Expulsar" onclick="event.stopPropagation();kickMember(\''+uid.replace(/'/g,"\\'")+'\')">👢</button>' : '';
+    const delegateBtn = (iAmOwner && !isMe) ? '<button class="view-btn" style="background:#6a1b9a!important" title="Hacer administrador" onclick="event.stopPropagation();delegateAdmin(\''+uid.replace(/'/g,"\\'")+'\')">🔑</button>' : '';
     const _ua=(alias||uid).replace(/'/g,"\\'");
     const dmBtn = !isMe ? '<button class="view-btn" style="background:#00838f!important" title="Mensaje privado" onclick="event.stopPropagation();openDM(\''+uid.replace(/'/g,"\\'")+'\',\''+_ua+'\')">✉️</button>' : '';
-    return '<div class="profile-row"><div class="avatar">'+ini+'</div><div class="profile-info" onclick="'+act+'"><div class="profile-name">'+alias+meTag+owner+'</div><div class="profile-stat">'+oc.owned+'/'+oc.total+' Pokémon deseados</div></div><div class="profile-actions"><button class="view-btn" onclick="'+act+'">'+btn+'</button>'+dmBtn+kickBtn+'</div></div>';
+    return '<div class="profile-row"><div class="avatar">'+ini+'</div><div class="profile-info" onclick="'+act+'"><div class="profile-name">'+alias+meTag+owner+'</div><div class="profile-stat">'+oc.owned+'/'+oc.total+' Pokémon deseados</div></div><div class="profile-actions"><button class="view-btn" onclick="'+act+'">'+btn+'</button>'+dmBtn+delegateBtn+kickBtn+'</div></div>';
   }).join('');
 }
 
