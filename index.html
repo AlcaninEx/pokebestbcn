@@ -419,7 +419,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
       <button class="auth-btn" onclick="doGlobalLogin()" data-i18n="enter">Entrar</button>
       <p style="text-align:center;font-size:13px;color:#666;margin-top:14px"><span data-i18n="no_account">¿No tienes cuenta?</span> <a href="#" onclick="showGlobalRegister();return false" style="color:#CC0000;font-weight:700" data-i18n="create_account">Crear cuenta</a></p>
     </div>
-    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.r</p>
+    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.s</p>
   </div>
 </div>
 
@@ -559,7 +559,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
           </button>
         </div>
         <button class="home-btn-small" onclick="openNovedades()" style="background:#ede7f6;border-color:#5e35b1;color:#4527a0">
-          <span data-i18n="news">🆕 Novedades</span> · v0.985.r
+          <span data-i18n="news">🆕 Novedades</span> · v0.985.s
         </button>
       </div>
 
@@ -1388,10 +1388,17 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
     <h1 data-i18n="news">🆕 Novedades</h1>
   </div>
   <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:24px">
-    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.r</b></p>
+    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.s</b></p>
 
     <div class="nov-version nov-item-current">
-      <div class="nov-version-head"><span class="nov-version-num">v0.985.r · actual</span><span class="nov-version-tag">Limpieza + traducción al inglés</span></div>
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.s · actual</span><span class="nov-version-tag">Fix: seleccionar a cualquier miembro para comerciar</span></div>
+      <div class="nov-list">
+        <div class="nov-item"><span>🐛</span><span>Corregido: algunos miembros (p.ej. el administrador) no aparecían en el desplegable de "comerciar con" del Filtro Lucky aunque sí se les viera en Miembros. Ahora el desplegable lista a todos los miembros de la comunidad igual que la pantalla de Miembros, sin depender de coincidencias exactas de nombre.</span></div>
+      </div>
+    </div>
+
+    <div class="nov-version">
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.r</span><span class="nov-version-tag">Limpieza + traducción al inglés</span></div>
       <div class="nov-list">
         <div class="nov-item"><span>🌐</span><span>Rocket Rewards, delegar/salir de administrador en comunidades y el "🙋 Yo" del Filtro Lucky ya funcionan en inglés (antes se quedaban en español pase lo que pase con el idioma elegido).</span></div>
         <div class="nov-item"><span>🧹</span><span>Limpieza interna: eliminadas varias funciones y datos que ya no se usaban en ningún sitio (sin cambios visibles).</span></div>
@@ -6400,9 +6407,22 @@ function saveTradeWith(name) {
 }
 
 function populateTradeWithSelects(selectedName) {
-  // Solo miembros reales de la comunidad (evita perfiles huérfanos con ids raros)
-  const memberAliases = new Set(Object.values((ST.currentCommunity && ST.currentCommunity.members) || {}).map(m => String(m.alias)));
-  const names = (ST.profiles || []).map(p => p.name).filter(n => n !== ST.cur && memberAliases.has(n));
+  // Construimos la lista recorriendo los MIEMBROS de la comunidad (igual que la pantalla
+  // de "Miembros"), no los perfiles cargados. Así aparecen TODOS los miembros —incluido el
+  // admin— sin depender de que el nombre del documento de perfil case exactamente con el
+  // alias del mapa de miembros (bug anterior: el admin no salía aunque sí se le viera como
+  // miembro). Usamos alias || uid como respaldo, igual que en renderMembers, y de paso
+  // seguimos evitando perfiles huérfanos con ids raros (esos no están en members).
+  const members = (ST.currentCommunity && ST.currentCommunity.members) ? Object.entries(ST.currentCommunity.members) : [];
+  const seen = new Set();
+  const names = [];
+  members.forEach(([uid, m]) => {
+    const alias = (m && m.alias) ? String(m.alias) : String(uid);
+    if (!alias || alias === ST.cur || seen.has(alias)) return;
+    seen.add(alias);
+    names.push(alias);
+  });
+  names.sort((a, b) => a.localeCompare(b));
   // "Comerciar con... Yo": permite ver el Filtro Lucky calculado sobre tu propio
   // perfil (útil para gestionar tus propios Pokémon aunque no vayas a comerciar
   // con nadie más ahora mismo).
