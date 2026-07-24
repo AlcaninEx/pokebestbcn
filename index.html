@@ -419,7 +419,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
       <button class="auth-btn" onclick="doGlobalLogin()" data-i18n="enter">Entrar</button>
       <p style="text-align:center;font-size:13px;color:#666;margin-top:14px"><span data-i18n="no_account">¿No tienes cuenta?</span> <a href="#" onclick="showGlobalRegister();return false" style="color:#CC0000;font-weight:700" data-i18n="create_account">Crear cuenta</a></p>
     </div>
-    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.i</p>
+    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.j</p>
   </div>
 </div>
 
@@ -559,7 +559,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
           </button>
         </div>
         <button class="home-btn-small" onclick="openNovedades()" style="background:#ede7f6;border-color:#5e35b1;color:#4527a0">
-          <span data-i18n="news">🆕 Novedades</span> · v0.985.i
+          <span data-i18n="news">🆕 Novedades</span> · v0.985.j
         </button>
       </div>
 
@@ -1387,10 +1387,19 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
     <h1 data-i18n="news">🆕 Novedades</h1>
   </div>
   <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:24px">
-    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.i</b></p>
+    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.j</b></p>
 
     <div class="nov-version nov-item-current">
-      <div class="nov-version-head"><span class="nov-version-num">v0.985.i · actual</span><span class="nov-version-tag">Rocket Rewards</span></div>
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.j · actual</span><span class="nov-version-tag">Copias Dinamax: rediseño</span></div>
+      <div class="nov-list">
+        <div class="nov-item"><span>🐛</span><span>Corregido: al borrar una ficha de Incursión o Dynamax y volver a añadirla, se podía "quedar pegada" con los datos (IVs, obtenido, al máximo, enlace) de la copia anterior ya borrada. Ahora borrar una ficha resetea siempre todos sus datos.</span></div>
+        <div class="nov-item"><span>⚡</span><span>Nuevo sistema de "token copia" para "¿Es Dinamax?": al marcar "Sí" en una copia de Incursión, queda como copia disponible para la próxima ficha Dynamax de esa especie que añadas. Al añadirla, se reclama automáticamente la copia de mejores IVs entre las disponibles. Si borras esa ficha Dynamax, la copia vuelve a quedar libre para la siguiente.</span></div>
+        <div class="nov-item"><span>⚠️</span><span>Si ya tenías una ficha Dynamax de esa especie en el equipo antes de marcar "Sí" (con sus propios datos), no se toca ni se sobrescribe: verás un aviso pidiéndote que la borres y la vuelvas a añadir para que pueda enlazarse con la nueva copia.</span></div>
+      </div>
+    </div>
+
+    <div class="nov-version">
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.i</span><span class="nov-version-tag">Rocket Rewards</span></div>
       <div class="nov-list">
         <div class="nov-item"><span>🚀</span><span>Nueva pantalla "Rocket Rewards" en "➕ Más Herramientas": toda la información del Team GO Rocket (Giovanni, los tres líderes Cliff/Arlo/Sierra y los 22 tipos de recluta), con su frase traducida al castellano y los Pokémon Oscuros (y sus debilidades) que puedes conseguir al derrotarlos.</span></div>
         <div class="nov-item"><span>🎛️</span><span>Pantalla "Crea tu filtro": dos opciones nuevas junto a "Quitar favoritos" para excluir Pokémon variocolor (&!variocolor) o con fondo especial (&!fondo).</span></div>
