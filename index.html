@@ -419,7 +419,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
       <button class="auth-btn" onclick="doGlobalLogin()" data-i18n="enter">Entrar</button>
       <p style="text-align:center;font-size:13px;color:#666;margin-top:14px"><span data-i18n="no_account">¿No tienes cuenta?</span> <a href="#" onclick="showGlobalRegister();return false" style="color:#CC0000;font-weight:700" data-i18n="create_account">Crear cuenta</a></p>
     </div>
-    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.h</p>
+    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.i</p>
   </div>
 </div>
 
@@ -555,9 +555,11 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
           </button>
           <button class="home-btn-small" onclick="openDiarias()" style="font-size:13px;padding:10px;background:#e8f5e9;border-color:#2e7d32;color:#1b5e20"><span data-i18n="daily">📋 Diarias</span>
           </button>
+          <button class="home-btn-small" onclick="openRocketRewards()" style="font-size:13px;padding:10px;background:#eceff1;border-color:#37474f;color:#212121;grid-column:1/3"><span data-i18n="rocket_rewards">🚀 Rocket Rewards</span>
+          </button>
         </div>
         <button class="home-btn-small" onclick="openNovedades()" style="background:#ede7f6;border-color:#5e35b1;color:#4527a0">
-          <span data-i18n="news">🆕 Novedades</span> · v0.985.h
+          <span data-i18n="news">🆕 Novedades</span> · v0.985.i
         </button>
       </div>
 
@@ -1250,6 +1252,22 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
   </div>
 </div>
 
+<!-- ROCKET REWARDS -->
+<div id="rocket-rewards-screen" class="screen">
+  <div class="app-header">
+    <button class="back-btn" onclick="closeRocketRewards()">←</button>
+    <h1 data-i18n="rocket_rewards">🚀 Rocket Rewards</h1>
+  </div>
+  <p style="text-align:center;font-size:10.5px;color:#888;padding:10px 14px 0" data-i18n="rocket_rewards_desc">Miembros del Team GO Rocket, sus frases y los Pokémon Oscuros que puedes conseguir al derrotarlos.</p>
+  <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 14px 24px">
+    <div class="tabs" style="position:static;margin-bottom:10px">
+      <button class="tab active" id="rr-tab-leaders" onclick="switchRocketTab('leaders')" data-i18n="rr_tab_leaders">👑 Jefe y Líderes</button>
+      <button class="tab" id="rr-tab-grunts" onclick="switchRocketTab('grunts')" data-i18n="rr_tab_grunts">👤 Reclutas</button>
+    </div>
+    <div id="rr-list"></div>
+  </div>
+</div>
+
 <!-- PERFIL SCREEN -->
 <div id="tipsadmin-screen" class="screen">
   <div class="app-header" style="position:sticky;top:0;z-index:40">
@@ -1369,10 +1387,18 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
     <h1 data-i18n="news">🆕 Novedades</h1>
   </div>
   <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:24px">
-    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.h</b></p>
+    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.i</b></p>
 
     <div class="nov-version nov-item-current">
-      <div class="nov-version-head"><span class="nov-version-num">v0.985.h · actual</span><span class="nov-version-tag">Más traducción al inglés</span></div>
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.i · actual</span><span class="nov-version-tag">Rocket Rewards</span></div>
+      <div class="nov-list">
+        <div class="nov-item"><span>🚀</span><span>Nueva pantalla "Rocket Rewards" en "➕ Más Herramientas": toda la información del Team GO Rocket (Giovanni, los tres líderes Cliff/Arlo/Sierra y los 22 tipos de recluta), con su frase traducida al castellano y los Pokémon Oscuros (y sus debilidades) que puedes conseguir al derrotarlos.</span></div>
+        <div class="nov-item"><span>🎛️</span><span>Pantalla "Crea tu filtro": dos opciones nuevas junto a "Quitar favoritos" para excluir Pokémon variocolor (&!variocolor) o con fondo especial (&!fondo).</span></div>
+      </div>
+    </div>
+
+    <div class="nov-version">
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.h</span><span class="nov-version-tag">Más traducción al inglés</span></div>
       <div class="nov-list">
         <div class="nov-item"><span>🌐</span><span>Muchas más pantallas traducidas al inglés: Tracker IVs, Mis Pokémon, Eficacia de Tipos, Megas, Diarias, Legacy, Poképaradas, Trackers, Pokémon Objetivo, Comunidad y más.</span></div>
         <div class="nov-item"><span>🐛</span><span>Arreglado: al marcar un Pokémon "al máximo" cuando ya no quedaba ninguna copia pendiente de esa familia, se guardaba un progreso de caramelos "fantasma" que podía hacer que una copia nueva añadida más tarde (p.ej. otra base recién capturada) apareciera ya como completada en Pokémon Objetivo sin estarlo. Ahora se resetea ese progreso al completar la familia.</span></div>
@@ -3247,7 +3273,7 @@ function addFromRanking(id) {
     if(isDmaxEntry&&!_tt.includes('dynamax'))_tt.push('dynamax');
     p.custom[newId]={n:data.n,dps:data.dps||0,img:data.img||'',fast:_ft,charge:_ct,type:type,tags:_tt,isDmax:isDmaxEntry};
   }
-  if(isDmaxEntry) autoLinkDmaxCopies(p, pkSpeciesKey(p,newId));
+  if(isDmaxEntry) claimTokenForDmax(p, newId);
   save(); renderAlbum(); renderRanking(); renderMain();
   // Toast con huecos restantes
   if(isDmaxEntry){
@@ -3279,6 +3305,7 @@ function removeRankEntry(id, type) {
   delete p.album[id];
   if(p.custom) delete p.custom[id];
   if(p.teamAssign) delete p.teamAssign[id];
+  releasePkEntry(p, id);
   ST.expanded=null; save(); renderAlbum(); renderRanking(); renderMain();
 }
 function countAlbumForType(p, type, team) {
@@ -3335,6 +3362,7 @@ function removeFromAlbum(pkId) {
   delete p.album[pkId];
   if(p.custom) delete p.custom[pkId];
   if(p.teamAssign) delete p.teamAssign[pkId];
+  releasePkEntry(p, pkId);
   ST.expanded=null; save(); renderAlbum(); renderRanking(); renderMain();
 }
 // ── VÍNCULO ENTRE FICHAS DE LA MISMA ESPECIE (Mega ↔ Dynamax ↔ normal) ──────
@@ -3407,38 +3435,43 @@ function ivScoreOf(p,id){
   const pk=(p&&p.pk&&p.pk[id])||{};
   return (pk.ivAtk||0)*100+(pk.ivDef||0)*20+(pk.ivHp||0)*30;
 }
-function autoLinkDmaxCopies(p, speciesKey){
-  if(!p||!p.album||!speciesKey||speciesKey==='sh:') return false;
+// Se llama SOLO en el momento en que se añade una ficha Dynamax nueva al equipo
+// (nunca de forma retroactiva/"barrido" sobre fichas Dynamax que ya estaban en el
+// equipo desde antes), para no sobrescribir en silencio datos que el usuario ya
+// hubiera introducido a mano en una ficha Dynamax existente. Busca entre las copias
+// de Incursión marcadas "⚡ ¿Es Dinamax? Sí" que todavía no tengan un hueco Dynamax
+// asignado (el "token" sigue libre) y reclama la de mejores IVs para esta ficha.
+function claimTokenForDmax(p, dmaxId){
+  if(!p||!p.album) return false;
+  if(p.pk && p.pk[dmaxId] && p.pk[dmaxId].linkTo) return false; // ya enlazada
+  const speciesKey=pkSpeciesKey(p,dmaxId);
+  if(!speciesKey||speciesKey==='sh:') return false;
   const raidCands=Object.keys(p.album).filter(id=>p.album[id]===true
     && !String(id).includes('-dmax-')
     && pkSpeciesKey(p,id)===speciesKey
     && hasDmaxTag(id,p)
     && p.pk && p.pk[id] && p.pk[id].isDmaxCopy===true
-    && !(p.pk[id].linkTo) && !(p.pk[id].noLink)
+    && !(p.pk[id].linkTo)
   ).sort((a,b)=>ivScoreOf(p,b)-ivScoreOf(p,a));
-  const dmaxCands=Object.keys(p.album).filter(id=>p.album[id]===true
-    && String(id).includes('-dmax-')
-    && pkSpeciesKey(p,id)===speciesKey
-    && !(p.pk && p.pk[id] && p.pk[id].linkTo)
-  );
-  const n=Math.min(raidCands.length,dmaxCands.length);
-  let changed=false;
-  for(let i=0;i<n;i++){
-    const rId=raidCands[i], dId=dmaxCands[i];
-    if(!p.pk[rId])p.pk[rId]={}; if(!p.pk[dId])p.pk[dId]={};
-    p.pk[rId].linkTo=dId; p.pk[dId].linkTo=rId;
-    const src=p.pk[rId];
-    Object.assign(p.pk[dId],{ivAtk:src.ivAtk||0,ivDef:src.ivDef||0,ivHp:src.ivHp||0,owned:src.owned||false,maxed:src.maxed||false});
-    changed=true;
-  }
-  return changed;
+  if(!raidCands.length) return false;
+  const rId=raidCands[0];
+  if(!p.pk[rId])p.pk[rId]={}; if(!p.pk[dmaxId])p.pk[dmaxId]={};
+  p.pk[rId].linkTo=dmaxId; p.pk[dmaxId].linkTo=rId;
+  const src=p.pk[rId];
+  Object.assign(p.pk[dmaxId],{ivAtk:src.ivAtk||0,ivDef:src.ivDef||0,ivHp:src.ivHp||0,owned:src.owned||false,maxed:src.maxed||false});
+  return true;
 }
-function autoLinkAllDmax(p){
-  if(!p||!p.album) return false;
-  const keys=new Set(Object.keys(p.album).filter(id=>p.album[id]===true).map(id=>pkSpeciesKey(p,id)));
-  let changed=false;
-  keys.forEach(k=>{ if(k&&k!=='sh:'&&autoLinkDmaxCopies(p,k)) changed=true; });
-  return changed;
+// Al borrar una ficha (Incursión o Dynamax) del álbum, hay que resetear sus datos
+// guardados en p.pk por completo (IVs, obtenido, al máximo, es-dinamax, enlace…),
+// porque si luego se vuelve a añadir el mismo Pokémon puede reutilizar el mismo id
+// y "heredaría" en silencio los datos de la copia anterior ya borrada. Además, si
+// tenía un enlace con otra ficha (p.ej. su pareja Incursión↔Dynamax), libera también
+// ese lado para que su "token copia" quede de nuevo disponible.
+function releasePkEntry(p, id){
+  if(!p||!p.pk) return;
+  const pk=p.pk[id];
+  if(pk&&pk.linkTo&&p.pk[pk.linkTo]) delete p.pk[pk.linkTo].linkTo;
+  delete p.pk[id];
 }
 function syncLinked(p,id,fields){
   linkedIds(p,id).forEach(x=>{
@@ -3502,7 +3535,18 @@ function togDmaxCopy(id,v) {
   const p=goc(ST.cur); if(!p.pk[id])p.pk[id]={};
   if (v === null) { delete p.pk[id].isDmaxCopy; } else { p.pk[id].isDmaxCopy=v; }
   syncLinked(p,id,{isDmaxCopy: v===null?undefined:v});
-  if (v===true) autoLinkDmaxCopies(p, pkSpeciesKey(p,id));
+  // El "token copia" solo se reclama automáticamente cuando se AÑADE una ficha
+  // Dynamax nueva (ver claimTokenForDmax, llamada desde addFromRanking). Si ya
+  // tenías una ficha Dynamax de esta especie en el equipo desde antes, no se
+  // toca (para no sobrescribir datos que ya tuvieras ahí): hay que borrarla y
+  // volver a añadirla para que pueda "recoger" esta copia.
+  if (v===true) {
+    const speciesKey=pkSpeciesKey(p,id);
+    const existingDmax=Object.keys(p.album||{}).filter(k=>p.album[k]===true && String(k).includes('-dmax-') && pkSpeciesKey(p,k)===speciesKey);
+    if (existingDmax.length && !(p.pk[id]&&p.pk[id].linkTo)) {
+      showToast('⚠️ Reinicia tu Dinamax de este tipo/base para que copie a este Pokémon');
+    }
+  }
   save();
   if(ST.albumTab==='dmax') renderAlbumDmax(); else renderAlbum();
 }
@@ -3734,10 +3778,9 @@ function renderAlbumDmax() {
   if(!rows.length){el.innerHTML='<p style="text-align:center;padding:20px;color:#aaa">Sin datos Dynamax.</p>';return;}
   const p2=gp(ST.view||ST.cur);
   ensureValidTeam(p2);
-  // Pase oportunista: engancha cualquier "Es Dinamax: Sí" y hueco Dynamax que hayan quedado
-  // sueltos (p.ej. marcados antes de esta función, o añadidos por separado). Nunca en modo
-  // solo lectura (ST.view), para no tocar el perfil de otra persona.
-  if(!isV && autoLinkAllDmax(p2)) save();
+  // Nota: ya no hay un "barrido" retroactivo de enlaces aquí. El token-copia solo se
+  // reclama en el momento de AÑADIR una ficha Dynamax nueva (claimTokenForDmax), para
+  // no sobrescribir en silencio datos de fichas Dynamax que ya estuvieran en el equipo.
   const dmaxOwnedIds=p2&&p2.album?Object.keys(p2.album).filter(id=>p2.album[id]===true&&id.startsWith(ST.type+'-dmax-')&&entryInTeam(p2,id,ST.curTeam||1)):[];
   const dmaxOwnedCount=dmaxOwnedIds.filter(id=>p2&&p2.pk&&p2.pk[id]&&p2.pk[id].owned).length;
   const dmaxTeamHeader=`<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 14px 6px;background:rgba(0,0,0,.35)">${teamBarHtml(p2)}<span style="font-size:12px;font-weight:700;color:#fff;flex-shrink:0">En propiedad ${dmaxOwnedCount}/6</span></div>`;
@@ -3796,6 +3839,7 @@ function removeDmaxEntry(albumId) {
   delete p.album[albumId];
   if(p.custom) delete p.custom[albumId];
   if(p.teamAssign) delete p.teamAssign[albumId];
+  releasePkEntry(p, albumId);
   save(); renderAlbumDmax(); renderMain();
 }
 
@@ -5514,7 +5558,7 @@ function deleteTeamPrompt(){
     if(!t.includes(n)) return;
     const rest=t.filter(x=>x!==n);
     if(rest.length){ p.teamAssign=p.teamAssign||{}; p.teamAssign[id]=rest; }
-    else { delete p.album[id]; if(p.custom) delete p.custom[id]; if(p.teamAssign) delete p.teamAssign[id]; }
+    else { delete p.album[id]; if(p.custom) delete p.custom[id]; if(p.teamAssign) delete p.teamAssign[id]; releasePkEntry(p, id); }
   });
   if(p.teamNames) delete p.teamNames[n];
   if(ST.curTeam===n) ST.curTeam=1;
@@ -5797,6 +5841,95 @@ function confirmDeleteDmaxTeam() {
   updateHomeMenu();
 }
 
+// ── ROCKET REWARDS ────────────────────────────────────────────────────────
+const RR_TYPE_ES = {Normal:'Normal',Fire:'Fuego',Water:'Agua',Grass:'Planta',Electric:'Eléctrico',Ice:'Hielo',Fighting:'Lucha',Poison:'Veneno',Ground:'Tierra',Flying:'Volador',Psychic:'Psíquico',Bug:'Bicho',Rock:'Roca',Ghost:'Fantasma',Dragon:'Dragón',Dark:'Siniestro',Steel:'Acero',Fairy:'Hada'};
+function rrW(str){
+  // "Ground160" -> "Tierra 160%"
+  const m = str.match(/^([A-Za-z]+)(\d+)$/);
+  if(!m) return str;
+  return (RR_TYPE_ES[m[1]]||m[1])+' '+m[2]+'%';
+}
+const RR_DATA = {
+  leaders: [
+    {n:'Giovanni', r:'Jefe del Team GO Rocket', q:'No podrás pararme... pero estoy impresionado con tu intento.', s:[[], [], [{n:'Reshiram', w:['Ground160','Rock160','Dragon160']}]]},
+    {n:'Cliff', r:'Líder del Team GO Rocket', q:'Haré cualquier cosa por el Team GO Rocket.', s:[[{n:'Axew', w:['Ice160','Dragon160','Fairy160']}], [], []]},
+    {n:'Arlo', r:'Líder del Team GO Rocket', q:'La arrogancia conduce al fracaso.', s:[[{n:'Tyrunt', w:['Ice160','Fighting160','Ground160','Dragon160','Steel160','Fairy160']}], [], []]},
+    {n:'Sierra', r:'Líder del Team GO Rocket', q:'¡Espero que te guste el sabor del fracaso!', s:[[{n:'Amaura', w:['Fighting256','Steel256','Water160','Grass160','Ground160','Rock160']}], [], []]},
+  ],
+  grunts: [
+    {n:'Recluta ♂ tipo Normal', q:'Normal no significa débil.', s:[[{n:'Teddiursa',w:['Fighting160']},{n:'Hoothoot',w:['Electric160','Ice160','Rock160']},{n:'Porygon',w:['Fighting160']}], [{n:'Loudred',w:['Fighting160']},{n:'Stufful',w:['Fighting160','Flying160','Psychic160','Fairy160']},{n:'Starly',w:['Electric160','Ice160','Rock160']}], []]},
+    {n:'Recluta ♀ tipo Fuego', q:'¿Sabes lo caliente que puede llegar a ser el aliento de fuego de los Pokémon?', s:[[{n:'Litwick',w:['Water160','Ground160','Rock160','Ghost160','Dark160']},{n:'Ponyta',w:['Water160','Ground160','Rock160']},{n:'Torchic',w:['Water160','Ground160','Rock160']}], [], []]},
+    {n:'Recluta ♀ tipo Agua', q:'¡Estas aguas son traicioneras!', s:[[{n:'Mudkip',w:['Grass160','Electric160']},{n:'Tentacool',w:['Electric160','Ground160','Psychic160']},{n:'Krabby',w:['Grass160','Electric160']}], [], []]},
+    {n:'Recluta ♂ tipo Agua', q:'¡Estas aguas son traicioneras!', s:[[{n:'Magikarp',w:['Grass160','Electric160']},{n:'Feebas',w:['Grass160','Electric160']}], [], []]},
+    {n:'Recluta ♀ tipo Eléctrico', q:'¡Prepárate para alucinar!', s:[[{n:'Voltorb',w:['Ground160']},{n:'Shinx',w:['Ground160']},{n:'Helioptile',w:['Fighting160','Ground160']}], [{n:'Electabuzz',w:['Ground160']},{n:'Voltorb',w:['Ground160']},{n:'Alolan Geodude',w:['Ground256','Water160','Grass160','Fighting160']}], []]},
+    {n:'Recluta ♂ tipo Planta', q:'¡No nos vaciles!', s:[[{n:'Phantump',w:['Fire160','Ice160','Flying160','Ghost160','Dark160']},{n:'Treecko',w:['Fire160','Ice160','Poison160','Flying160','Bug160']},{n:'Tangela',w:['Fire160','Ice160','Poison160','Flying160','Bug160']}], [], []]},
+    {n:'Recluta ♀ tipo Hielo', q:'El frío puede paralizarte, ¿no lo sabes?', s:[[{n:'Seel',w:['Grass160','Electric160']},{n:'Delibird',w:['Rock256','Fire160','Electric160','Steel160']},{n:'Spheal',w:['Electric160','Grass160','Fighting160','Rock160']}], [], []]},
+    {n:'Recluta ♀ tipo Lucha', q:'Estos músculos no son solo para impresionar.', s:[[{n:'Timburr',w:['Flying160','Psychic160','Fairy160']},{n:'Mankey',w:['Flying160','Psychic160','Fairy160']},{n:'Machop',w:['Flying160','Psychic160','Fairy160']}], [{n:'Hitmontop',w:['Flying160','Psychic160','Fairy160']},{n:'Hitmonlee',w:['Flying160','Psychic160','Fairy160']},{n:'Hitmonchan',w:['Flying160','Psychic160','Fairy160']}], []]},
+    {n:'Recluta ♀ tipo Veneno', q:'¡En posición y listo para atacar!', s:[[{n:'Oddish',w:['Fire160','Ice160','Flying160','Psychic160']},{n:'Zubat',w:['Electric160','Ice160','Psychic160','Rock160']},{n:'Qwilfish',w:['Electric160','Ground160','Psychic160']}], [{n:'Galarian Weezing',w:['Ground160','Psychic160','Steel160']},{n:'Nidorino',w:['Ground160','Psychic160']},{n:'Nidorina',w:['Ground160','Psychic160']}], []]},
+    {n:'Recluta ♂ tipo Tierra', q:'¡Haré que te comas el polvo!', s:[[{n:'Rhyhorn',w:['Water256','Grass256','Ice160','Fighting160','Ground160','Steel160']},{n:'Gligar',w:['Ice256','Water160']},{n:'Trapinch',w:['Water160','Grass160','Ice160']}], [{n:'Gligar',w:['Ice256','Water160']},{n:'Claydol',w:['Water160','Grass160','Ice160','Bug160','Ghost160','Dark160']},{n:'Vibrava',w:['Ice256','Dragon160','Fairy160']}], []]},
+    {n:'Recluta ♀ tipo Volador', q:'¡Mi Pokémon pájaro quiere combatir contigo!', s:[[{n:'Taillow',w:['Electric160','Ice160','Rock160']},{n:'Rookidee',w:['Electric160','Ice160','Rock160']},{n:'Swablu',w:['Electric160','Ice160','Rock160']}], [{n:'Scyther',w:['Rock256','Fire160','Electric160','Ice160','Flying160']},{n:'Zubat',w:['Electric160','Ice160','Psychic160','Rock160']},{n:'Gligar',w:['Ice256','Water160']}], []]},
+    {n:'Recluta ♂ tipo Psíquico', q:'¿Te asustan los psíquicos que usan un poder invisible?', s:[[{n:'Wobbuffet',w:['Bug160','Ghost160','Dark160']},{n:'Ralts',w:['Poison160','Ghost160','Steel160']},{n:'Drowzee',w:['Bug160','Ghost160','Dark160']}], [{n:'Drowzee',w:['Bug160','Ghost160','Dark160']},{n:'Duosion',w:['Bug160','Ghost160','Dark160']},{n:'Wobbuffet',w:['Bug160','Ghost160','Dark160']}], []]},
+    {n:'Recluta ♂ tipo Bicho', q:'¡Vamos, mi poderoso Pokémon de tipo Bicho!', s:[[{n:'Venonat',w:['Fire160','Flying160','Psychic160','Rock160']},{n:'Weedle',w:['Fire160','Flying160','Psychic160','Rock160']},{n:'Grubbin',w:['Fire160','Flying160','Rock160']}], [{n:'Pinsir',w:['Fire160','Flying160','Rock160']},{n:'Anorith',w:['Water160','Rock160','Steel160']},{n:'Dewpider',w:['Electric160','Flying160','Rock160']}], []]},
+    {n:'Recluta ♂ tipo Roca', q:'¡Soy fuerte como una roca!', s:[[{n:'Onix',w:['Water256','Grass256','Ice160','Fighting160','Ground160','Steel160']},{n:'Kabuto',w:['Grass256','Electric160','Fighting160','Ground160']},{n:'Cranidos',w:['Water160','Grass160','Fighting160','Ground160','Steel160']}], [{n:'Shieldon',w:['Fighting256','Ground256','Water160']},{n:'Graveler',w:['Water256','Grass256','Ice160','Fighting160','Ground160','Steel160']},{n:'Cranidos',w:['Water160','Grass160','Fighting160','Ground160','Steel160']}], []]},
+    {n:'Recluta ♂ tipo Fantasma', q:'Ja, ja, ja...', s:[[{n:'Duskull',w:['Ghost160','Dark160']},{n:'Gastly',w:['Ground160','Psychic160','Ghost160','Dark160']},{n:'Yamask',w:['Ghost160','Dark160']}], [], []]},
+    {n:'Recluta ♀ tipo Dragón', q:'¡GRRR! ¿Qué te pareció eso?', s:[[{n:'Noibat',w:['Ice256','Rock160','Dragon160','Fairy160']},{n:'Deino',w:['Fairy256','Ice160','Fighting160','Bug160','Dragon160']},{n:'Dratini',w:['Ice160','Dragon160','Fairy160']}], [], []]},
+    {n:'Recluta ♀ tipo Siniestro', q:'Donde quiera que hay luz, también hay sombras...', s:[[{n:'Carvanha',w:['Electric160','Grass160','Fighting160','Bug160','Fairy160']},{n:'Poochyena',w:['Fighting160','Bug160','Fairy160']},{n:'Alolan Rattata',w:['Fighting256','Bug160','Fairy160']}], [{n:'Sneasel',w:['Fighting256','Fire160','Bug160','Rock160','Steel160','Fairy160']},{n:'Houndour',w:['Water160','Fighting160','Ground160','Rock160']},{n:'Absol',w:['Fighting160','Bug160','Fairy160']}], []]},
+    {n:'Recluta ♂ tipo Acero', q:'¡No eres rival para mi voluntad de hierro!', s:[[{n:'Alolan Sandshrew',w:['Fire256','Fighting256','Ground160']},{n:'Aron',w:['Fighting256','Ground256','Water160']},{n:'Beldum',w:['Fire160','Ground160','Ghost160','Dark160']}], [], []]},
+    {n:'Recluta ♀ tipo Hada', q:'¡Mira a mi Pokémon tan mono!', s:[[{n:'Ralts',w:['Poison160','Ghost160','Steel160']},{n:'Snubbull',w:['Poison160','Steel160']},{n:'Alolan Vulpix',w:['Fire160','Fighting160','Rock160','Steel160']}], [{n:'Snubbull',w:['Poison160','Steel160']},{n:'Galarian Weezing',w:['Ground160','Psychic160','Steel160']},{n:'Kirlia',w:['Poison160','Ghost160','Steel160']}], []]},
+    {n:'Recluta ♂ (genérico)', q:'Ganar es para los ganadores.', s:[[{n:'Bulbasaur',w:['Fire160','Ice160','Flying160','Psychic160']},{n:'Charmander',w:['Water160','Ground160','Rock160']},{n:'Squirtle',w:['Grass160','Electric160']}], [], []]},
+    {n:'Recluta ♀ (genérica)', q:'Ganar es para los ganadores.', s:[[{n:'Snorlax',w:['Fighting160']},{n:'Lapras',w:['Electric160','Grass160','Fighting160','Rock160']}], [], []]},
+    {n:'Recluta ♀ señuelo', q:'Te la colé, novato.', approx:true, s:[[{n:'Bellsprout',w:['Fire160','Ice160','Flying160','Psychic160']}], [], []]},
+  ]
+};
+let _rrTab = 'leaders';
+function switchRocketTab(tab){
+  _rrTab = tab;
+  document.getElementById('rr-tab-leaders').classList.toggle('active', tab==='leaders');
+  document.getElementById('rr-tab-grunts').classList.toggle('active', tab==='grunts');
+  renderRocketRewards();
+}
+function rrCardHtml(c){
+  const slotsHtml = c.s.map((opts, i) => {
+    if(!opts.length) return '';
+    const monsHtml = opts.map(m => `<div style="display:flex;flex-direction:column;gap:2px;background:#f5f5f5;border-radius:8px;padding:6px 8px;flex:1;min-width:110px">
+        <div style="font-size:12px;font-weight:800;color:#333">🌑 ${m.n}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:3px">${m.w.map(w=>`<span style="font-size:9.5px;font-weight:700;color:#c62828;background:#ffebee;border-radius:5px;padding:1px 5px">${rrW(w)}</span>`).join('')}</div>
+      </div>`).join('');
+    return `<div style="margin-bottom:6px">
+      <div style="font-size:10.5px;font-weight:700;color:#888;margin-bottom:3px">Slot ${i+1}${opts.length>1?' (posibles)':''}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${monsHtml}</div>
+    </div>`;
+  }).join('');
+  return `<div style="background:#fff;border:1.5px solid #e0e0e0;border-radius:12px;padding:12px;margin-bottom:10px">
+    <div style="font-size:14px;font-weight:800;color:#212121">${c.n}</div>
+    ${c.r?`<div style="font-size:11px;font-weight:700;color:#607d8b;margin-bottom:6px">${c.r}</div>`:''}
+    <div style="font-size:12.5px;font-style:italic;color:#555;margin:4px 0 10px">"${c.q}"${c.approx?' <span style="font-size:10px;color:#e65100;font-style:normal;font-weight:700">(traducción aproximada, no confirmada)</span>':''}</div>
+    ${slotsHtml || '<div style="font-size:11px;color:#aaa">Sin datos de lineup confirmados</div>'}
+  </div>`;
+}
+function renderRocketRewards(){
+  const box = document.getElementById('rr-list');
+  if(!box) return;
+  const list = RR_DATA[_rrTab] || [];
+  box.innerHTML = list.map(rrCardHtml).join('');
+}
+function openRocketRewards() {
+  renderRocketRewards();
+  document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+  document.getElementById('rocket-rewards-screen').style.display = 'block';
+  document.getElementById('home-menu').style.display = 'none';
+  window.scrollTo(0, 0);
+}
+function closeRocketRewards() {
+  document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+  document.getElementById('profile-screen').style.display = 'block';
+  document.getElementById('home-menu').style.display = 'block';
+  document.getElementById('home-profile-section').style.display = 'none';
+  document.getElementById('trainer-name-bar').textContent = '👋 ' + ST.cur;
+  updateHomeMenu();
+  window.scrollTo(0, 0);
+}
+
 function openDiarias() {
   document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
   document.getElementById('diarias-screen').style.display = 'block';
@@ -5819,6 +5952,8 @@ const FILTRO_SUFFIXES = [
   {label:'Quitar favoritos', suffix:'&!favoritos'},
   {label:'Quitar oscuros', suffix:'&!oscuro'},
   {label:'Quitar dinamax', suffix:'&!dinamax'},
+  {label:'Quitar Variocolor', suffix:'&!variocolor'},
+  {label:'Quitar con fondo', suffix:'&!fondo'},
   {label:'Quitar tamaños (XXS / XXL)', suffix:'&!xxs&!xxl', full:true},
 ];
 let _filtroBaseByCat = {viernes:'', resto:''};
@@ -7386,7 +7521,7 @@ document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==
 const I18N={
   es:{login_sub:'Inicia sesión con tu cuenta',user:'Usuario',pass:'Contraseña',user_ph:'tu usuario',pass_ph:'tu contraseña',remember:'Recordarme en este dispositivo',disclaimer:'TrackDex es una aplicación de fans sin ánimo de lucro, no afiliada a Nintendo, Niantic, The Pokémon Company ni Game Freak. Pokémon y todos los nombres e imágenes relacionados son marcas de sus respectivos propietarios.',privacy:'Política de privacidad',enter:'Entrar',no_account:'¿No tienes cuenta?',create_account:'Crear cuenta',reg_sub:'Una sola vez, para todas tus comunidades',user_ph2:'letras, números, - o _',pass_ph2:'mínimo 6 caracteres',pass2:'Repite la contraseña',pass2_ph:'repite la contraseña',have_account:'¿Ya tienes cuenta?',signin:'Iniciar sesión',
     communities:'Comunidades',logout:'Salir',create_comm:'➕ Crear comunidad',comm_name:'Nombre de la comunidad',comm_pass:'Contraseña de la comunidad',comm_alias:'Tu alias en esta comunidad',create:'Crear',join_sub:'Elige tu alias y escribe la contraseña',alias_ph:'cómo te verán aquí',pass_only:'contraseña',
-    my_pokemon:'⚔️ Mis Pokemons',raid_pk:'Pokémon Incursiones',dmax_pk:'Pokémon Dynamax',rankings:'Rankings DPS',top50:'Top 50 por tipo',type_calc:'🔥 Calculadora de Tipos',megas:'🍬 Megas',legacy:'⭐ Legacy',target:'🎯 Pokémon Objetivo',daily:'📋 Diarias',stops:'🎁 Poképaradas!',trackers:'🏆 Trackers',community:'🏘️ Comunidad',news:'🆕 Novedades',more_tools:'➕ Más Herramientas',
+    my_pokemon:'⚔️ Mis Pokemons',raid_pk:'Pokémon Incursiones',dmax_pk:'Pokémon Dynamax',rankings:'Rankings DPS',top50:'Top 50 por tipo',type_calc:'🔥 Calculadora de Tipos',megas:'🍬 Megas',legacy:'⭐ Legacy',target:'🎯 Pokémon Objetivo',daily:'📋 Diarias',stops:'🎁 Poképaradas!',trackers:'🏆 Trackers',community:'🏘️ Comunidad',news:'🆕 Novedades',more_tools:'➕ Más Herramientas',rocket_rewards:'🚀 Rocket Rewards',rocket_rewards_desc:'Miembros del Team GO Rocket, sus frases y los Pokémon Oscuros que puedes conseguir al derrotarlos.',rr_tab_leaders:'👑 Jefe y Líderes',rr_tab_grunts:'👤 Reclutas',
     profile:'👤 Perfil',app_section:'ℹ️ Aplicación',guide:'📖 Guía TrackDex',rename_teams:'✏️ Cambiar nombres de tus equipos',change_pass:'🔑 Cambiar contraseña',privacy_btn:'🔒 Política de privacidad',danger:'⚠️ Zona de peligro',del_team:'🗑️ Borrar un equipo de Pokémon (2, 3 o 4)',del_raid:'🗑️ Borrar todos tus Pokémon de Incursión',del_dmax:'🗑️ Borrar todos tus Pokémon Dynamax',del_account:'☠️ Borrar mi cuenta y todos mis datos',
     community_t:'🏘️ Comunidad',members:'👥 Miembros de la Comunidad',chat:'💬 Chat de comunidad',switch_comm:'🔄 Cambiar comunidad',
     close:'Cerrar',understood:'Entendido',
@@ -7408,7 +7543,7 @@ const I18N={
   },
   en:{login_sub:'Sign in to your account',user:'Username',pass:'Password',user_ph:'your username',pass_ph:'your password',remember:'Remember me on this device',disclaimer:'TrackDex is a non-profit fan app, not affiliated with Nintendo, Niantic, The Pokémon Company or Game Freak. Pokémon and all related names and images are trademarks of their respective owners.',privacy:'Privacy policy',enter:'Sign in',no_account:"Don't have an account?",create_account:'Create account',reg_sub:'Just once, for all your communities',user_ph2:'letters, numbers, - or _',pass_ph2:'at least 6 characters',pass2:'Repeat password',pass2_ph:'repeat your password',have_account:'Already have an account?',signin:'Sign in',
     communities:'Communities',logout:'Sign out',create_comm:'➕ Create community',comm_name:'Community name',comm_pass:'Community password',comm_alias:'Your nickname in this community',create:'Create',join_sub:'Pick your nickname and enter the password',alias_ph:'how others will see you',pass_only:'password',
-    my_pokemon:'⚔️ My Pokémon',raid_pk:'Raid Pokémon',dmax_pk:'Dynamax Pokémon',rankings:'DPS Rankings',top50:'Top 50 per type',type_calc:'🔥 Type Calculator',megas:'🍬 Megas',legacy:'⭐ Legacy',target:'🎯 Target Pokémon',daily:'📋 Dailies',stops:'🎁 PokéStops!',trackers:'🏆 Trackers',community:'🏘️ Community',news:'🆕 News',more_tools:'➕ More tools',
+    my_pokemon:'⚔️ My Pokémon',raid_pk:'Raid Pokémon',dmax_pk:'Dynamax Pokémon',rankings:'DPS Rankings',top50:'Top 50 per type',type_calc:'🔥 Type Calculator',megas:'🍬 Megas',legacy:'⭐ Legacy',target:'🎯 Target Pokémon',daily:'📋 Dailies',stops:'🎁 PokéStops!',trackers:'🏆 Trackers',community:'🏘️ Community',news:'🆕 News',more_tools:'➕ More tools',rocket_rewards:'🚀 Rocket Rewards',rocket_rewards_desc:'Team GO Rocket members, their lines, and the Shadow Pokémon you can get by defeating them.',rr_tab_leaders:'👑 Boss & Leaders',rr_tab_grunts:'👤 Grunts',
     profile:'👤 Profile',app_section:'ℹ️ App',guide:'📖 TrackDex guide',rename_teams:'✏️ Rename your teams',change_pass:'🔑 Change password',privacy_btn:'🔒 Privacy policy',danger:'⚠️ Danger zone',del_team:'🗑️ Delete a Pokémon team (2, 3 or 4)',del_raid:'🗑️ Delete all your Raid Pokémon',del_dmax:'🗑️ Delete all your Dynamax Pokémon',del_account:'☠️ Delete my account and all my data',
     community_t:'🏘️ Community',members:'👥 Community members',chat:'💬 Community chat',switch_comm:'🔄 Switch community',
     close:'Close',understood:'Got it',
