@@ -419,7 +419,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
       <button class="auth-btn" onclick="doGlobalLogin()" data-i18n="enter">Entrar</button>
       <p style="text-align:center;font-size:13px;color:#666;margin-top:14px"><span data-i18n="no_account">¿No tienes cuenta?</span> <a href="#" onclick="showGlobalRegister();return false" style="color:#CC0000;font-weight:700" data-i18n="create_account">Crear cuenta</a></p>
     </div>
-    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.n</p>
+    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.o</p>
   </div>
 </div>
 
@@ -559,7 +559,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
           </button>
         </div>
         <button class="home-btn-small" onclick="openNovedades()" style="background:#ede7f6;border-color:#5e35b1;color:#4527a0">
-          <span data-i18n="news">🆕 Novedades</span> · v0.985.n
+          <span data-i18n="news">🆕 Novedades</span> · v0.985.o
         </button>
       </div>
 
@@ -1388,10 +1388,18 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
     <h1 data-i18n="news">🆕 Novedades</h1>
   </div>
   <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:24px">
-    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.n</b></p>
+    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.o</b></p>
 
     <div class="nov-version nov-item-current">
-      <div class="nov-version-head"><span class="nov-version-num">v0.985.n · actual</span><span class="nov-version-tag">Rocket Rewards: ajustes finos</span></div>
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.o · actual</span><span class="nov-version-tag">Retratos de recluta + fix de IVs</span></div>
+      <div class="nov-list">
+        <div class="nov-item"><span>🐛</span><span>Corregido: los Pokémon marcados como "Obtenido" no mostraban sus IVs porque el nombre guardado tiene el formato "X (Shadow)" y la comparación no lo tenía en cuenta. Ya detecta ese formato (y también "Shadow X") correctamente.</span></div>
+        <div class="nov-item"><span>🖼️</span><span>El icono de género junto a la frase ahora usa el retrato real del recluta hombre/mujer en vez del icono ♂/♀ dibujado a mano (que queda como respaldo automático si el retrato no está disponible).</span></div>
+      </div>
+    </div>
+
+    <div class="nov-version">
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.n</span><span class="nov-version-tag">Rocket Rewards: ajustes finos</span></div>
       <div class="nov-list">
         <div class="nov-item"><span>🚫</span><span>Quitadas del todo las debilidades de tipo (ni porcentajes ni nombres de tipo): no aportaban nada a esta pantalla.</span></div>
         <div class="nov-item"><span>🎯</span><span>Corregido el criterio de "No obtenido": ahora solo se marca así un Pokémon si de verdad está en alguno de tus equipos (lo sigues) y todavía no lo tienes. Si ya lo tienes, pone "Obtenido" y sus IVs (o "Sin IVs asignados" si no los has puesto). Las especies que no sigues no muestran ninguna etiqueta ni cuentan para el orden — muchas de las opciones de cada recluta no interesan y ya no distraen.</span></div>
@@ -5934,7 +5942,7 @@ function rrOwnedInfo(p, name){
   for(const id in p.album){
     if(p.album[id]!==true) continue;
     if(!isShadowEntry(id,p)) continue;
-    const raw=(getPkName(id,p)||'').toLowerCase().replace(/^shadow\s+/,'').replace(/^(alolan|galarian|hisuian|paldean)\s+/,'').replace(/[^a-z0-9]/g,'');
+    const raw=(getPkName(id,p)||'').toLowerCase().replace(/\s*\(shadow\)/,'').replace(/^shadow\s+/,'').replace(/^(alolan|galarian|hisuian|paldean)\s+/,'').replace(/[^a-z0-9]/g,'');
     if(raw!==target) continue;
     const pk=(p.pk&&p.pk[id])||{};
     const owned=!!pk.owned;
@@ -6024,9 +6032,10 @@ function switchRocketTab(tab){
   renderRocketRewards();
 }
 // El sexo de quien habla importa (la frase es de ese recluta/líder concreto), así que
-// mostramos un icono junto a la frase indicando si es hombre o mujer. No usamos una foto
-// real del personaje (Niantic/LeekDuck no ofrecen esos sprites de forma estable para
-// hotlink), sino un icono propio dibujado en SVG, coherente con el resto de iconos de la app.
+// mostramos el retrato oficial del recluta hombre/mujer junto a la frase. Los ficheros
+// grunt-male.png / grunt-female.png van en la raíz del proyecto (junto a icon-192.png).
+// Si por lo que sea faltan esos ficheros, se cae automáticamente a un icono ♂/♀ propio
+// para que la pantalla nunca se quede rota.
 function rrGender(c){
   if(/♀/.test(c.n)) return 'f';
   if(/♂/.test(c.n)) return 'm';
@@ -6034,15 +6043,20 @@ function rrGender(c){
   if(c.n==='Giovanni'||c.n==='Cliff'||c.n==='Arlo') return 'm';
   return null;
 }
+function rrGenderIconError(img, isF){
+  // grunt-male.png / grunt-female.png no encontrados: icono ♂/♀ propio como respaldo
+  const color = isF ? '#ad1457' : '#1565c0';
+  const symbol = isF ? '♀' : '♂';
+  img.outerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span style="position:relative;left:-2px;top:8px;font-size:11px;font-weight:900;color:${color}">${symbol}</span>`;
+}
 function rrGenderIcon(g){
   if(!g) return '';
   const isF = g==='f';
   const color = isF ? '#ad1457' : '#1565c0';
   const bg = isF ? '#fce4ec' : '#e3f2fd';
-  const symbol = isF ? '♀' : '♂';
-  return `<div title="${isF?'Recluta mujer':'Recluta hombre'}" style="width:34px;height:34px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid ${color}">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
-    <span style="position:relative;left:-2px;top:8px;font-size:11px;font-weight:900;color:${color}">${symbol}</span>
+  const src = isF ? 'grunt-female.png' : 'grunt-male.png';
+  return `<div title="${isF?'Recluta mujer':'Recluta hombre'}" style="width:34px;height:34px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid ${color};overflow:hidden">
+    <img src="${src}" alt="" style="width:100%;height:100%;object-fit:cover" onerror="rrGenderIconError(this,${isF})">
   </div>`;
 }
 function rrCardHtml(c, pinned){
