@@ -419,7 +419,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
       <button class="auth-btn" onclick="doGlobalLogin()" data-i18n="enter">Entrar</button>
       <p style="text-align:center;font-size:13px;color:#666;margin-top:14px"><span data-i18n="no_account">¿No tienes cuenta?</span> <a href="#" onclick="showGlobalRegister();return false" style="color:#CC0000;font-weight:700" data-i18n="create_account">Crear cuenta</a></p>
     </div>
-    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.q</p>
+    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.r</p>
   </div>
 </div>
 
@@ -559,7 +559,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
           </button>
         </div>
         <button class="home-btn-small" onclick="openNovedades()" style="background:#ede7f6;border-color:#5e35b1;color:#4527a0">
-          <span data-i18n="news">🆕 Novedades</span> · v0.985.q
+          <span data-i18n="news">🆕 Novedades</span> · v0.985.r
         </button>
       </div>
 
@@ -1388,10 +1388,18 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
     <h1 data-i18n="news">🆕 Novedades</h1>
   </div>
   <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:24px">
-    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.q</b></p>
+    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.r</b></p>
 
     <div class="nov-version nov-item-current">
-      <div class="nov-version-head"><span class="nov-version-num">v0.985.q · actual</span><span class="nov-version-tag">Retratos de recluta reales</span></div>
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.r · actual</span><span class="nov-version-tag">Limpieza + traducción al inglés</span></div>
+      <div class="nov-list">
+        <div class="nov-item"><span>🌐</span><span>Rocket Rewards, delegar/salir de administrador en comunidades y el "🙋 Yo" del Filtro Lucky ya funcionan en inglés (antes se quedaban en español pase lo que pase con el idioma elegido).</span></div>
+        <div class="nov-item"><span>🧹</span><span>Limpieza interna: eliminadas varias funciones y datos que ya no se usaban en ningún sitio (sin cambios visibles).</span></div>
+      </div>
+    </div>
+
+    <div class="nov-version">
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.q</span><span class="nov-version-tag">Retratos de recluta reales</span></div>
       <div class="nov-list">
         <div class="nov-item"><span>🖼️</span><span>Añadidos los retratos reales de los reclutas (male-grunt.webp / female-grunt.webp) junto a su frase, sustituyendo al icono ♂/♀ dibujado a mano (que sigue de respaldo automático si algún día faltan los ficheros).</span></div>
       </div>
@@ -2777,10 +2785,6 @@ function getLiveRankRow(name, type) {
   const cleanName = name.replace(' (Shadow)','').trim();
   return rows.find(r => r.n === cleanName) || null;
 }
-function getCurrentDpsForName(name, type) {
-  const row = getLiveRankRow(name, type);
-  return row ? row.dps : null;
-}
 function albumPks(n,type) {
   const a=getAlbum(n);
   const p=gp(n);
@@ -2827,13 +2831,6 @@ function countType(n,type) {
 }
 
 // ── PROFILE ──────────────────────────────────────────────────────────────────
-function addProfile() {
-  const inp=document.getElementById('new-name'); const n=inp.value.trim();
-  if(!n)return; if(ST.profiles.find(p=>p.name===n)){showToast('Ya existe ese perfil 👤');return;}
-  goc(n); inp.value='';
-  fbSave(n, {pk:{}, album:null, custom:null});
-  save(); renderProfiles();
-}
 function delProfile(n,e) { e.stopPropagation(); if(!confirm('¿Eliminar a '+n+'?'))return; ST.profiles=ST.profiles.filter(p=>p.name!==n); fbDelete(n); save(); renderProfiles(); }
 function selProfileIdx(i) {
   const p=ST.profiles[i]; if(!p)return;
@@ -2846,7 +2843,6 @@ function selProfileIdx(i) {
   updateHomeMenu();
 }
 function viewProfileIdx(i) { const p=ST.profiles[i]; if(!p)return; if(!ST.cur){showToast('Primero selecciona tu perfil 👤');return;} ST.view=p.name;show('main-screen');renderMain(); }
-function delProfileIdx(i,e) { const p=ST.profiles[i]; if(p)delProfile(p.name,e); }
 function goProfiles() {
   showCommunitySelection();
 }
@@ -3395,26 +3391,6 @@ function countAlbumForType(p, type, team) {
   }
   return count;
 }
-function addToAlbum(pkId) {
-  if(!ST.cur)return;
-  const p=goc(ST.cur);
-  const pk=PD.find(x=>x.id===pkId); if(!pk)return;
-  // If album not yet customized, start from defaults
-  if(p.album===undefined||p.album===null) p.album=Object.assign({},defaultAlbum());
-  // Count how many are currently in album for this type
-  const currentCount=countAlbumForType(p, pk.type);
-  if(currentCount>=6){showToast('Ya tienes 6 Pokémon en este equipo\nElimina uno primero ⚔️');return;}
-  if(pk.tags&&pk.tags.includes('mega')&&hasMegaInTeam(p,pk.type)){showToast('Solo un Mega por equipo\nSustituye el actual primero 🔴');return;}
-  const _t=ST.curTeam||1;
-  if(p.album[pkId]===true){
-    // ya existe en otro equipo: compartirlo
-    if(!entryInTeam(p,pkId,_t)){ p.teamAssign=p.teamAssign||{}; p.teamAssign[pkId]=[...teamAssignOf(p,pkId),_t]; }
-  } else {
-    p.album[pkId]=true;
-    p.teamAssign=p.teamAssign||{}; p.teamAssign[pkId]=[_t];
-  }
-  save(); renderAlbum(); renderRanking(); renderMain();
-}
 function removeFromAlbum(pkId) {
   if(!ST.cur)return;
   const p=goc(ST.cur);
@@ -3647,7 +3623,6 @@ function togMaxed(id,v) {
   if(ST.albumTab==='dmax') renderAlbumDmax(); else renderAlbum();
   renderMain(); renderRanking(); renderProfiles();
 }
-function togLeg(id,v) { const p=goc(ST.cur); if(!p.pk[id])p.pk[id]={}; p.pk[id].legacy=v; save(); }
 function updIV(id,s,v) {
   const n=parseInt(v); const p=goc(ST.cur); if(!p.pk[id])p.pk[id]={};
   const bs=BASE_STATS[id]||[200,150,180];
@@ -3682,7 +3657,6 @@ function updIV(id,s,v) {
   syncLinked(p,id,{ivAtk:p.pk[id].ivAtk||0, ivDef:p.pk[id].ivDef||0, ivHp:p.pk[id].ivHp||0});
   save();
 }
-function updDPS(id,v) { const n=parseFloat(v); const p=goc(ST.cur); if(!p.pk[id])p.pk[id]={}; p.pk[id].dps=isNaN(n)?undefined:n; save(); }
 function togCard(id) { ST.expanded=ST.expanded===id?null:id; if(ST.albumTab==='dmax') renderAlbumDmax(); else renderAlbum(); }
 
 // ── TABS ──────────────────────────────────────────────────────────────────────
@@ -3728,14 +3702,9 @@ function openType(k) {
   if(ST.view){vb.style.display='flex';document.getElementById('view-name').textContent=ST.view;} else vb.style.display='none';
   renderAlbum(); renderRanking(); show('detail-screen'); renderTypeNav();
 }
-function toggleDark() {
-  // Modo oscuro desactivado temporalmente (pendiente de desarrollo)
-  showToast('🌙 Modo oscuro: en desarrollo, próximamente');
-}
 function openGuia(){document.getElementById('modal-guia').style.display='flex';}
 function closeGuiaBtn(){document.getElementById('modal-guia').style.display='none';}
 function closeGuia(e){if(e.target.id==='modal-guia')document.getElementById('modal-guia').style.display='none';}
-function openInfo(){document.getElementById('modal-info').style.display='flex';}
 function closeInfoBtn(){document.getElementById('modal-info').style.display='none';}
 function closeInfo(e){if(e.target.id==='modal-info')document.getElementById('modal-info').style.display='none';}
 
@@ -6092,35 +6061,95 @@ function rrPriorityScore(c, p){
 }
 const RR_DATA = {
   leaders: [
-    {n:'Giovanni', r:'Jefe del Team GO Rocket', q:'No podrás pararme... pero estoy impresionado con tu intento.', s:[[], [], [{n:'Reshiram', w:['Ground160','Rock160','Dragon160']}]]},
-    {n:'Cliff', r:'Líder del Team GO Rocket', q:'Haré cualquier cosa por el Team GO Rocket.', s:[[{n:'Axew', w:['Ice160','Dragon160','Fairy160']}], [], []]},
-    {n:'Arlo', r:'Líder del Team GO Rocket', q:'La arrogancia conduce al fracaso.', s:[[{n:'Tyrunt', w:['Ice160','Fighting160','Ground160','Dragon160','Steel160','Fairy160']}], [], []]},
-    {n:'Sierra', r:'Líder del Team GO Rocket', q:'¡Espero que te guste el sabor del fracaso!', s:[[{n:'Amaura', w:['Fighting256','Steel256','Water160','Grass160','Ground160','Rock160']}], [], []]},
+    {n:'Giovanni', r:'Jefe del Team GO Rocket', q:'No podrás pararme... pero estoy impresionado con tu intento.', s:[[], [], [{n:'Reshiram'}]]},
+    {n:'Cliff', r:'Líder del Team GO Rocket', q:'Haré cualquier cosa por el Team GO Rocket.', s:[[{n:'Axew'}], [], []]},
+    {n:'Arlo', r:'Líder del Team GO Rocket', q:'La arrogancia conduce al fracaso.', s:[[{n:'Tyrunt'}], [], []]},
+    {n:'Sierra', r:'Líder del Team GO Rocket', q:'¡Espero que te guste el sabor del fracaso!', s:[[{n:'Amaura'}], [], []]},
   ],
   grunts: [
-    {n:'Recluta ♂ tipo Normal', q:'Normal no significa débil.', s:[[{n:'Teddiursa',w:['Fighting160']},{n:'Hoothoot',w:['Electric160','Ice160','Rock160']},{n:'Porygon',w:['Fighting160']}], [{n:'Loudred',w:['Fighting160']},{n:'Stufful',w:['Fighting160','Flying160','Psychic160','Fairy160']},{n:'Starly',w:['Electric160','Ice160','Rock160']}], []]},
-    {n:'Recluta ♀ tipo Fuego', q:'¿Sabes lo caliente que puede llegar a ser el aliento de fuego de los Pokémon?', s:[[{n:'Litwick',w:['Water160','Ground160','Rock160','Ghost160','Dark160']},{n:'Ponyta',w:['Water160','Ground160','Rock160']},{n:'Torchic',w:['Water160','Ground160','Rock160']}], [], []]},
-    {n:'Recluta ♀ tipo Agua', q:'¡Estas aguas son traicioneras!', s:[[{n:'Mudkip',w:['Grass160','Electric160']},{n:'Tentacool',w:['Electric160','Ground160','Psychic160']},{n:'Krabby',w:['Grass160','Electric160']}], [], []]},
-    {n:'Recluta ♂ tipo Agua', q:'¡Estas aguas son traicioneras!', s:[[{n:'Magikarp',w:['Grass160','Electric160']},{n:'Feebas',w:['Grass160','Electric160']}], [], []]},
-    {n:'Recluta ♀ tipo Eléctrico', q:'¡Prepárate para alucinar!', s:[[{n:'Voltorb',w:['Ground160']},{n:'Shinx',w:['Ground160']},{n:'Helioptile',w:['Fighting160','Ground160']}], [{n:'Electabuzz',w:['Ground160']},{n:'Voltorb',w:['Ground160']},{n:'Alolan Geodude',w:['Ground256','Water160','Grass160','Fighting160']}], []]},
-    {n:'Recluta ♂ tipo Planta', q:'¡No nos vaciles!', s:[[{n:'Phantump',w:['Fire160','Ice160','Flying160','Ghost160','Dark160']},{n:'Treecko',w:['Fire160','Ice160','Poison160','Flying160','Bug160']},{n:'Tangela',w:['Fire160','Ice160','Poison160','Flying160','Bug160']}], [], []]},
-    {n:'Recluta ♀ tipo Hielo', q:'El frío puede paralizarte, ¿no lo sabes?', s:[[{n:'Seel',w:['Grass160','Electric160']},{n:'Delibird',w:['Rock256','Fire160','Electric160','Steel160']},{n:'Spheal',w:['Electric160','Grass160','Fighting160','Rock160']}], [], []]},
-    {n:'Recluta ♀ tipo Lucha', q:'Estos músculos no son solo para impresionar.', s:[[{n:'Timburr',w:['Flying160','Psychic160','Fairy160']},{n:'Mankey',w:['Flying160','Psychic160','Fairy160']},{n:'Machop',w:['Flying160','Psychic160','Fairy160']}], [{n:'Hitmontop',w:['Flying160','Psychic160','Fairy160']},{n:'Hitmonlee',w:['Flying160','Psychic160','Fairy160']},{n:'Hitmonchan',w:['Flying160','Psychic160','Fairy160']}], []]},
-    {n:'Recluta ♀ tipo Veneno', q:'¡En posición y listo para atacar!', s:[[{n:'Oddish',w:['Fire160','Ice160','Flying160','Psychic160']},{n:'Zubat',w:['Electric160','Ice160','Psychic160','Rock160']},{n:'Qwilfish',w:['Electric160','Ground160','Psychic160']}], [{n:'Galarian Weezing',w:['Ground160','Psychic160','Steel160']},{n:'Nidorino',w:['Ground160','Psychic160']},{n:'Nidorina',w:['Ground160','Psychic160']}], []]},
-    {n:'Recluta ♂ tipo Tierra', q:'¡Haré que te comas el polvo!', s:[[{n:'Rhyhorn',w:['Water256','Grass256','Ice160','Fighting160','Ground160','Steel160']},{n:'Gligar',w:['Ice256','Water160']},{n:'Trapinch',w:['Water160','Grass160','Ice160']}], [{n:'Gligar',w:['Ice256','Water160']},{n:'Claydol',w:['Water160','Grass160','Ice160','Bug160','Ghost160','Dark160']},{n:'Vibrava',w:['Ice256','Dragon160','Fairy160']}], []]},
-    {n:'Recluta ♀ tipo Volador', q:'¡Mi Pokémon pájaro quiere combatir contigo!', s:[[{n:'Taillow',w:['Electric160','Ice160','Rock160']},{n:'Rookidee',w:['Electric160','Ice160','Rock160']},{n:'Swablu',w:['Electric160','Ice160','Rock160']}], [{n:'Scyther',w:['Rock256','Fire160','Electric160','Ice160','Flying160']},{n:'Zubat',w:['Electric160','Ice160','Psychic160','Rock160']},{n:'Gligar',w:['Ice256','Water160']}], []]},
-    {n:'Recluta ♂ tipo Psíquico', q:'¿Te asustan los psíquicos que usan un poder invisible?', s:[[{n:'Wobbuffet',w:['Bug160','Ghost160','Dark160']},{n:'Ralts',w:['Poison160','Ghost160','Steel160']},{n:'Drowzee',w:['Bug160','Ghost160','Dark160']}], [{n:'Drowzee',w:['Bug160','Ghost160','Dark160']},{n:'Duosion',w:['Bug160','Ghost160','Dark160']},{n:'Wobbuffet',w:['Bug160','Ghost160','Dark160']}], []]},
-    {n:'Recluta ♂ tipo Bicho', q:'¡Vamos, mi poderoso Pokémon de tipo Bicho!', s:[[{n:'Venonat',w:['Fire160','Flying160','Psychic160','Rock160']},{n:'Weedle',w:['Fire160','Flying160','Psychic160','Rock160']},{n:'Grubbin',w:['Fire160','Flying160','Rock160']}], [{n:'Pinsir',w:['Fire160','Flying160','Rock160']},{n:'Anorith',w:['Water160','Rock160','Steel160']},{n:'Dewpider',w:['Electric160','Flying160','Rock160']}], []]},
-    {n:'Recluta ♂ tipo Roca', q:'¡Soy fuerte como una roca!', s:[[{n:'Onix',w:['Water256','Grass256','Ice160','Fighting160','Ground160','Steel160']},{n:'Kabuto',w:['Grass256','Electric160','Fighting160','Ground160']},{n:'Cranidos',w:['Water160','Grass160','Fighting160','Ground160','Steel160']}], [{n:'Shieldon',w:['Fighting256','Ground256','Water160']},{n:'Graveler',w:['Water256','Grass256','Ice160','Fighting160','Ground160','Steel160']},{n:'Cranidos',w:['Water160','Grass160','Fighting160','Ground160','Steel160']}], []]},
-    {n:'Recluta ♂ tipo Fantasma', q:'Ja, ja, ja...', s:[[{n:'Duskull',w:['Ghost160','Dark160']},{n:'Gastly',w:['Ground160','Psychic160','Ghost160','Dark160']},{n:'Yamask',w:['Ghost160','Dark160']}], [], []]},
-    {n:'Recluta ♀ tipo Dragón', q:'¡GRRR! ¿Qué te pareció eso?', s:[[{n:'Noibat',w:['Ice256','Rock160','Dragon160','Fairy160']},{n:'Deino',w:['Fairy256','Ice160','Fighting160','Bug160','Dragon160']},{n:'Dratini',w:['Ice160','Dragon160','Fairy160']}], [], []]},
-    {n:'Recluta ♀ tipo Siniestro', q:'Donde quiera que hay luz, también hay sombras...', s:[[{n:'Carvanha',w:['Electric160','Grass160','Fighting160','Bug160','Fairy160']},{n:'Poochyena',w:['Fighting160','Bug160','Fairy160']},{n:'Alolan Rattata',w:['Fighting256','Bug160','Fairy160']}], [{n:'Sneasel',w:['Fighting256','Fire160','Bug160','Rock160','Steel160','Fairy160']},{n:'Houndour',w:['Water160','Fighting160','Ground160','Rock160']},{n:'Absol',w:['Fighting160','Bug160','Fairy160']}], []]},
-    {n:'Recluta ♂ tipo Acero', q:'¡No eres rival para mi voluntad de hierro!', s:[[{n:'Alolan Sandshrew',w:['Fire256','Fighting256','Ground160']},{n:'Aron',w:['Fighting256','Ground256','Water160']},{n:'Beldum',w:['Fire160','Ground160','Ghost160','Dark160']}], [], []]},
-    {n:'Recluta ♀ tipo Hada', q:'¡Mira a mi Pokémon tan mono!', s:[[{n:'Ralts',w:['Poison160','Ghost160','Steel160']},{n:'Snubbull',w:['Poison160','Steel160']},{n:'Alolan Vulpix',w:['Fire160','Fighting160','Rock160','Steel160']}], [{n:'Snubbull',w:['Poison160','Steel160']},{n:'Galarian Weezing',w:['Ground160','Psychic160','Steel160']},{n:'Kirlia',w:['Poison160','Ghost160','Steel160']}], []]},
-    {n:'Recluta ♂ (genérico)', q:'Ganar es para los ganadores.', s:[[{n:'Bulbasaur',w:['Fire160','Ice160','Flying160','Psychic160']},{n:'Charmander',w:['Water160','Ground160','Rock160']},{n:'Squirtle',w:['Grass160','Electric160']}], [], []]},
-    {n:'Recluta ♀ (genérica)', q:'Ganar es para los ganadores.', s:[[{n:'Snorlax',w:['Fighting160']},{n:'Lapras',w:['Electric160','Grass160','Fighting160','Rock160']}], [], []]},
-    {n:'Recluta ♀ señuelo', q:'Te la colé, novato.', approx:true, s:[[{n:'Bellsprout',w:['Fire160','Ice160','Flying160','Psychic160']}], [], []]},
+    {n:'Recluta ♂ tipo Normal', q:'Normal no significa débil.', s:[[{n:'Teddiursa'},{n:'Hoothoot'},{n:'Porygon'}], [{n:'Loudred'},{n:'Stufful'},{n:'Starly'}], []]},
+    {n:'Recluta ♀ tipo Fuego', q:'¿Sabes lo caliente que puede llegar a ser el aliento de fuego de los Pokémon?', s:[[{n:'Litwick'},{n:'Ponyta'},{n:'Torchic'}], [], []]},
+    {n:'Recluta ♀ tipo Agua', q:'¡Estas aguas son traicioneras!', s:[[{n:'Mudkip'},{n:'Tentacool'},{n:'Krabby'}], [], []]},
+    {n:'Recluta ♂ tipo Agua', q:'¡Estas aguas son traicioneras!', s:[[{n:'Magikarp'},{n:'Feebas'}], [], []]},
+    {n:'Recluta ♀ tipo Eléctrico', q:'¡Prepárate para alucinar!', s:[[{n:'Voltorb'},{n:'Shinx'},{n:'Helioptile'}], [{n:'Electabuzz'},{n:'Voltorb'},{n:'Alolan Geodude'}], []]},
+    {n:'Recluta ♂ tipo Planta', q:'¡No nos vaciles!', s:[[{n:'Phantump'},{n:'Treecko'},{n:'Tangela'}], [], []]},
+    {n:'Recluta ♀ tipo Hielo', q:'El frío puede paralizarte, ¿no lo sabes?', s:[[{n:'Seel'},{n:'Delibird'},{n:'Spheal'}], [], []]},
+    {n:'Recluta ♀ tipo Lucha', q:'Estos músculos no son solo para impresionar.', s:[[{n:'Timburr'},{n:'Mankey'},{n:'Machop'}], [{n:'Hitmontop'},{n:'Hitmonlee'},{n:'Hitmonchan'}], []]},
+    {n:'Recluta ♀ tipo Veneno', q:'¡En posición y listo para atacar!', s:[[{n:'Oddish'},{n:'Zubat'},{n:'Qwilfish'}], [{n:'Galarian Weezing'},{n:'Nidorino'},{n:'Nidorina'}], []]},
+    {n:'Recluta ♂ tipo Tierra', q:'¡Haré que te comas el polvo!', s:[[{n:'Rhyhorn'},{n:'Gligar'},{n:'Trapinch'}], [{n:'Gligar'},{n:'Claydol'},{n:'Vibrava'}], []]},
+    {n:'Recluta ♀ tipo Volador', q:'¡Mi Pokémon pájaro quiere combatir contigo!', s:[[{n:'Taillow'},{n:'Rookidee'},{n:'Swablu'}], [{n:'Scyther'},{n:'Zubat'},{n:'Gligar'}], []]},
+    {n:'Recluta ♂ tipo Psíquico', q:'¿Te asustan los psíquicos que usan un poder invisible?', s:[[{n:'Wobbuffet'},{n:'Ralts'},{n:'Drowzee'}], [{n:'Drowzee'},{n:'Duosion'},{n:'Wobbuffet'}], []]},
+    {n:'Recluta ♂ tipo Bicho', q:'¡Vamos, mi poderoso Pokémon de tipo Bicho!', s:[[{n:'Venonat'},{n:'Weedle'},{n:'Grubbin'}], [{n:'Pinsir'},{n:'Anorith'},{n:'Dewpider'}], []]},
+    {n:'Recluta ♂ tipo Roca', q:'¡Soy fuerte como una roca!', s:[[{n:'Onix'},{n:'Kabuto'},{n:'Cranidos'}], [{n:'Shieldon'},{n:'Graveler'},{n:'Cranidos'}], []]},
+    {n:'Recluta ♂ tipo Fantasma', q:'Ja, ja, ja...', s:[[{n:'Duskull'},{n:'Gastly'},{n:'Yamask'}], [], []]},
+    {n:'Recluta ♀ tipo Dragón', q:'¡GRRR! ¿Qué te pareció eso?', s:[[{n:'Noibat'},{n:'Deino'},{n:'Dratini'}], [], []]},
+    {n:'Recluta ♀ tipo Siniestro', q:'Donde quiera que hay luz, también hay sombras...', s:[[{n:'Carvanha'},{n:'Poochyena'},{n:'Alolan Rattata'}], [{n:'Sneasel'},{n:'Houndour'},{n:'Absol'}], []]},
+    {n:'Recluta ♂ tipo Acero', q:'¡No eres rival para mi voluntad de hierro!', s:[[{n:'Alolan Sandshrew'},{n:'Aron'},{n:'Beldum'}], [], []]},
+    {n:'Recluta ♀ tipo Hada', q:'¡Mira a mi Pokémon tan mono!', s:[[{n:'Ralts'},{n:'Snubbull'},{n:'Alolan Vulpix'}], [{n:'Snubbull'},{n:'Galarian Weezing'},{n:'Kirlia'}], []]},
+    {n:'Recluta ♂ (genérico)', q:'Ganar es para los ganadores.', s:[[{n:'Bulbasaur'},{n:'Charmander'},{n:'Squirtle'}], [], []]},
+    {n:'Recluta ♀ (genérica)', q:'Ganar es para los ganadores.', s:[[{n:'Snorlax'},{n:'Lapras'}], [], []]},
+    {n:'Recluta ♀ señuelo', q:'Te la colé, novato.', approx:true, s:[[{n:'Bellsprout'}], [], []]},
   ]
+};
+// Traducciones al inglés para el contenido de RR_DATA (frases/nombres/roles), mantenido
+// aparte para no reestructurar RR_DATA (que sigue siendo la fuente única en español).
+// Las 4 frases de líderes son texto oficial del juego; el resto son traducciones directas
+// nuestras (no oficiales) — los reclutas ya marcados approx:true mantienen ese aviso.
+const RR_QUOTES_EN = {
+  'Giovanni': "You won't be able to stop me... but I'm impressed you tried.",
+  'Cliff': "I'll do anything for Team GO Rocket.",
+  'Arlo': "Arrogance leads to failure.",
+  'Sierra': "I hope you like the taste of defeat!",
+  'Recluta ♂ tipo Normal': "Normal doesn't mean weak.",
+  'Recluta ♀ tipo Fuego': "Do you know how hot a Pokémon's fire breath can get?",
+  'Recluta ♀ tipo Agua': "These waters are treacherous!",
+  'Recluta ♂ tipo Agua': "These waters are treacherous!",
+  'Recluta ♀ tipo Eléctrico': "Get ready to be amazed!",
+  'Recluta ♂ tipo Planta': "Don't mess with us!",
+  'Recluta ♀ tipo Hielo': "Cold can paralyze you, didn't you know?",
+  'Recluta ♀ tipo Lucha': "These muscles aren't just for show.",
+  'Recluta ♀ tipo Veneno': "In position and ready to attack!",
+  'Recluta ♂ tipo Tierra': "I'll make you eat dust!",
+  'Recluta ♀ tipo Volador': "My bird Pokémon wants to battle you!",
+  'Recluta ♂ tipo Psíquico': "Are you scared of psychics using an invisible power?",
+  'Recluta ♂ tipo Bicho': "Come on, my mighty Bug-type Pokémon!",
+  'Recluta ♂ tipo Roca': "I'm as strong as a rock!",
+  'Recluta ♂ tipo Fantasma': "Heh heh heh...",
+  'Recluta ♀ tipo Dragón': "GRRR! What did you think of that?",
+  'Recluta ♀ tipo Siniestro': "Wherever there's light, there are also shadows...",
+  'Recluta ♂ tipo Acero': "You're no match for my iron will!",
+  'Recluta ♀ tipo Hada': "Look how cute my Pokémon is!",
+  'Recluta ♂ (genérico)': "Winning is for winners.",
+  'Recluta ♀ (genérica)': "Winning is for winners.",
+  'Recluta ♀ señuelo': "Got you there, rookie.",
+};
+const RR_ROLE_EN = {
+  'Jefe del Team GO Rocket': 'Team GO Rocket Boss',
+  'Líder del Team GO Rocket': 'Team GO Rocket Leader',
+};
+const RR_NAME_EN = {
+  'Recluta ♂ tipo Normal': 'Male Grunt · Normal type',
+  'Recluta ♀ tipo Fuego': 'Female Grunt · Fire type',
+  'Recluta ♀ tipo Agua': 'Female Grunt · Water type',
+  'Recluta ♂ tipo Agua': 'Male Grunt · Water type',
+  'Recluta ♀ tipo Eléctrico': 'Female Grunt · Electric type',
+  'Recluta ♂ tipo Planta': 'Male Grunt · Grass type',
+  'Recluta ♀ tipo Hielo': 'Female Grunt · Ice type',
+  'Recluta ♀ tipo Lucha': 'Female Grunt · Fighting type',
+  'Recluta ♀ tipo Veneno': 'Female Grunt · Poison type',
+  'Recluta ♂ tipo Tierra': 'Male Grunt · Ground type',
+  'Recluta ♀ tipo Volador': 'Female Grunt · Flying type',
+  'Recluta ♂ tipo Psíquico': 'Male Grunt · Psychic type',
+  'Recluta ♂ tipo Bicho': 'Male Grunt · Bug type',
+  'Recluta ♂ tipo Roca': 'Male Grunt · Rock type',
+  'Recluta ♂ tipo Fantasma': 'Male Grunt · Ghost type',
+  'Recluta ♀ tipo Dragón': 'Female Grunt · Dragon type',
+  'Recluta ♀ tipo Siniestro': 'Female Grunt · Dark type',
+  'Recluta ♂ tipo Acero': 'Male Grunt · Steel type',
+  'Recluta ♀ tipo Hada': 'Female Grunt · Fairy type',
+  'Recluta ♂ (genérico)': 'Male Grunt (generic)',
+  'Recluta ♀ (genérica)': 'Female Grunt (generic)',
+  'Recluta ♀ señuelo': 'Female Grunt (decoy)',
 };
 let _rrTab = 'grunts';
 let _rrPinned = {};
@@ -6168,7 +6197,7 @@ function rrGenderIcon(g){
   const color = isF ? '#ad1457' : '#1565c0';
   const bg = isF ? '#fce4ec' : '#e3f2fd';
   const src = isF ? 'female-grunt.webp' : 'male-grunt.webp';
-  return `<div title="${isF?'Recluta mujer':'Recluta hombre'}" style="width:34px;height:34px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid ${color};overflow:hidden">
+  return `<div title="${isF?tr('rr_female_grunt','Recluta mujer'):tr('rr_male_grunt','Recluta hombre')}" style="width:34px;height:34px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid ${color};overflow:hidden">
     <img src="${src}" alt="" style="width:100%;height:100%;object-fit:cover" onerror="rrGenderIconError(this,${isF})">
   </div>`;
 }
@@ -6186,11 +6215,11 @@ function rrCardHtml(c, pinned){
       const info = p ? rrOwnedInfo(p, m.n) : null;
       let tag = '';
       if (info && !info.owned) {
-        tag = `<span style="font-size:9px;font-weight:700;color:#e65100;background:#fff3e0;border-radius:5px;padding:1px 5px">🆕 No obtenido</span>`;
+        tag = `<span style="font-size:9px;font-weight:700;color:#e65100;background:#fff3e0;border-radius:5px;padding:1px 5px">${tr('rr_not_obtained','🆕 No obtenido')}</span>`;
       } else if (info && info.owned) {
         tag = info.hasIVs
-          ? `<span style="font-size:9px;font-weight:700;color:#2e7d32;background:#e8f5e9;border-radius:5px;padding:1px 5px">✅ Obtenido · ${info.ivAtk}/${info.ivDef}/${info.ivHp}</span>`
-          : `<span style="font-size:9px;font-weight:700;color:#2e7d32;background:#e8f5e9;border-radius:5px;padding:1px 5px">✅ Obtenido · Sin IVs asignados</span>`;
+          ? `<span style="font-size:9px;font-weight:700;color:#2e7d32;background:#e8f5e9;border-radius:5px;padding:1px 5px">✅ ${tr('rr_obtained','Obtenido')} · ${info.ivAtk}/${info.ivDef}/${info.ivHp}</span>`
+          : `<span style="font-size:9px;font-weight:700;color:#2e7d32;background:#e8f5e9;border-radius:5px;padding:1px 5px">✅ ${tr('rr_obtained','Obtenido')} · ${tr('biv_ord_noivs','Sin IVs asignados')}</span>`;
       }
       return `<div style="display:flex;gap:8px;align-items:center;background:#f5f5f5;border-radius:8px;padding:6px 8px;flex:1;min-width:170px">
         ${rrImgTag(m.n)}
@@ -6201,24 +6230,28 @@ function rrCardHtml(c, pinned){
       </div>`;
     }).join('');
     return `<div style="margin-bottom:6px">
-      <div style="font-size:10.5px;font-weight:700;color:#888;margin-bottom:3px">Slot ${i+1}${opts.length>1?' (posibles)':''}</div>
+      <div style="font-size:10.5px;font-weight:700;color:#888;margin-bottom:3px">Slot ${i+1}${opts.length>1?' ('+tr('rr_possible','posibles')+')':''}</div>
       <div style="display:flex;flex-wrap:wrap;gap:6px">${monsHtml}</div>
     </div>`;
   }).join('');
   const _key=(c.n||'').replace(/'/g,"\\'");
-  const pinBtn = `<button onclick="event.stopPropagation();rrTogglePin('${_key}')" title="Fijar" style="background:none;border:none;cursor:pointer;font-size:16px;line-height:1;padding:2px 4px;opacity:${pinned?1:.35}">📌</button>`;
+  const pinBtn = `<button onclick="event.stopPropagation();rrTogglePin('${_key}')" title="${tr('rr_pin_title','Fijar')}" style="background:none;border:none;cursor:pointer;font-size:16px;line-height:1;padding:2px 4px;opacity:${pinned?1:.35}">📌</button>`;
   const genderIcon = rrGenderIcon(rrGender(c));
+  const isEn = getLang()==='en';
+  const dispName = isEn && RR_NAME_EN[c.n] ? RR_NAME_EN[c.n] : c.n;
+  const dispRole = c.r ? ((isEn && RR_ROLE_EN[c.r]) ? RR_ROLE_EN[c.r] : c.r) : '';
+  const dispQuote = (isEn && RR_QUOTES_EN[c.n]) ? RR_QUOTES_EN[c.n] : c.q;
   return `<div style="background:#fff;border:1.5px solid ${pinned?'#ff9800':'#e0e0e0'};border-radius:12px;padding:12px;margin-bottom:10px">
     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px">
-      <div style="font-size:14px;font-weight:800;color:#212121">${c.n}</div>
+      <div style="font-size:14px;font-weight:800;color:#212121">${dispName}</div>
       ${pinBtn}
     </div>
-    ${c.r?`<div style="font-size:11px;font-weight:700;color:#607d8b;margin-bottom:6px">${c.r}</div>`:''}
+    ${dispRole?`<div style="font-size:11px;font-weight:700;color:#607d8b;margin-bottom:6px">${dispRole}</div>`:''}
     <div style="display:flex;align-items:center;gap:8px;margin:4px 0 10px">
       ${genderIcon}
-      <div style="font-size:12.5px;font-style:italic;color:#555;flex:1">"${c.q}"${c.approx?' <span style="font-size:10px;color:#e65100;font-style:normal;font-weight:700">(traducción aproximada, no confirmada)</span>':''}</div>
+      <div style="font-size:12.5px;font-style:italic;color:#555;flex:1">"${dispQuote}"${c.approx?' <span style="font-size:10px;color:#e65100;font-style:normal;font-weight:700">'+tr('rr_approx_translation','(traducción aproximada, no confirmada)')+'</span>':''}</div>
     </div>
-    ${slotsHtml || '<div style="font-size:11px;color:#aaa">Sin datos de lineup confirmados</div>'}
+    ${slotsHtml || '<div style="font-size:11px;color:#aaa">'+tr('rr_no_lineup_data','Sin datos de lineup confirmados')+'</div>'}
   </div>`;
 }
 function renderRocketRewards(){
@@ -6230,7 +6263,7 @@ function renderRocketRewards(){
   const pinned = list.filter(c=>_rrPinned[c.n]);
   const rest = list.filter(c=>!_rrPinned[c.n]);
   if(_rrTab==='grunts' && p) rest.sort((a,b)=>rrPriorityScore(a,p)-rrPriorityScore(b,p));
-  const pinnedHtml = pinned.length ? `<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:#ff9800;margin-bottom:4px">📌 FIJADOS</div>${pinned.map(c=>rrCardHtml(c,true)).join('')}</div>` : '';
+  const pinnedHtml = pinned.length ? `<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:#ff9800;margin-bottom:4px">${tr('rr_pinned_header','📌 FIJADOS')}</div>${pinned.map(c=>rrCardHtml(c,true)).join('')}</div>` : '';
   box.innerHTML = pinnedHtml + rest.map(c=>rrCardHtml(c,false)).join('');
 }
 function openRocketRewards() {
@@ -6373,8 +6406,8 @@ function populateTradeWithSelects(selectedName) {
   // "Comerciar con... Yo": permite ver el Filtro Lucky calculado sobre tu propio
   // perfil (útil para gestionar tus propios Pokémon aunque no vayas a comerciar
   // con nadie más ahora mismo).
-  const optsHtml = '<option value="">Selecciona un entrenador...</option>' +
-    `<option value="${ST.cur}"${ST.cur===selectedName?' selected':''}>🙋 Yo</option>` +
+  const optsHtml = '<option value="">'+tr('filtro_select_trainer','Selecciona un entrenador...')+'</option>' +
+    `<option value="${ST.cur}"${ST.cur===selectedName?' selected':''}>${tr('filtro_self_trade','🙋 Yo')}</option>` +
     names.map(n => `<option value="${n}"${n===selectedName?' selected':''}>${n}</option>`).join('');
   const selInitial = document.getElementById('filtro-trade-with-select-initial');
   const selTop = document.getElementById('filtro-trade-with-select');
@@ -6397,7 +6430,7 @@ function loadViernesForTrainer(name) {
   document.getElementById('filtro-viernes-locked').style.display = 'none';
   document.getElementById('filtro-viernes-unlocked').style.display = 'block';
   document.getElementById('filtro-trade-with-label').style.display = 'block';
-  document.getElementById('filtro-trade-with-name').textContent = (name===ST.cur) ? '🙋 Yo' : name;
+  document.getElementById('filtro-trade-with-name').textContent = (name===ST.cur) ? tr('filtro_self_trade','🙋 Yo') : name;
 }
 function onTradeWithInitialSelect() {
   const name = document.getElementById('filtro-trade-with-select-initial').value;
@@ -6534,25 +6567,6 @@ function openObjetivo(keepScroll) {
 
 
 
-function copyObjetivoFilter() {
-  const data = window._objData;
-  if (!data || !data.length) { showToast('No hay Pokémon objetivo aún'); return; }
-  const filter = data
-    .filter(d => !d.done)
-    .map(d => {
-      const eng = (POKEDEX[d.id] && POKEDEX[d.id].en) || ENG_NAMES[d.id];
-      return eng ? '+' + eng : null;
-    })
-    .filter(Boolean)
-    .join(',');
-  if (!filter) { showToast('No se pudo generar el filtro'); return; }
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(filter).then(() => showToast('✅ Filtro copiado'))
-      .catch(() => { _copyFallback(filter); });
-  } else {
-    _copyFallback(filter);
-  }
-}
 function _copyFallback(text) {
   const ta = document.createElement('textarea');
   ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
@@ -6651,15 +6665,6 @@ function candyNumInput(evoId, kind, inp){
   updateCandyProgress(evoId, kind, v);
   const rng = document.getElementById(kind === 'c' ? 'obj-rng-c' : 'obj-rng-xl');
   if (rng) rng.value = v;
-}
-function toggleTradeAnyDay(evoId) {
-  const p = goc(ST.cur);
-  if (!p.tradeAnyDay) p.tradeAnyDay = {};
-  p.tradeAnyDay[evoId] = !p.tradeAnyDay[evoId];
-  save();
-  openObjetivo(); // re-renders the grid + window._objData
-  const idx = window._objData.findIndex(x => x.id === evoId);
-  if (idx >= 0) openObjPopup(idx);
 }
 function closeObjPopup() {
   const popup = document.getElementById('obj-popup');
@@ -7898,6 +7903,9 @@ const I18N={
     detail_tab_mine:'Mis Pokémon',detail_tab_rank:'Ranking DPS',detail_readonly:'👁 Solo lectura —',detail_rank_raid:'⚔️ Incursiones',
     tc_title:'Eficacia de Tipos',tc_attacking:'⚔️ Atacando',tc_notvery:'x0.625 (poco eficaz)',tc_super:'x1.6 (super eficaz)',tc_select:'Selecciona 1 o 2 tipos (toca para seleccionar/deseleccionar)',tc_defending:'🛡️ Defendiendo',tc_doubleresist:'x0.390 (doble resist.)',
     active_badge:'ACTIVA', mega_dev_title:'🛠️ Modo Desarrollador',mega_dev_desc:'Activa para marcar qué Megas están en rotación. Los cambios se guardan para todos los jugadores.', mega_raids_title:'🥊 Megaincursiones actuales',mega_raids_subtitle:'Las Megas en incursión este mes. La activa ahora aparece destacada.', mega_energy_title:'🏙️ Megaenergía en Poképaradas',mega_energy_desc:'Misiones fijas que dan megaenergía. Busca siempre hueco libre antes de girar una nueva Poképarada.', mega_capture10:'🎯 Por capturar 10 de tipo (10 Megaenergía)',mega_powerup:'💪 Por dar más poder / Power-Up', mega_group_title:'👥 Misiones de Grupo (Party Play)',mega_group_desc:'20 Megaenergía por "Ganar 2 incursiones" o "Derrotar 3 Reclutas Rocket"', mega_special_title:'⚠️ Métodos Especiales',mega_special_desc:'Estos NO están en la rotación normal — requieren método específico', mega_special_photodisc:'Girando Fotodiscos de Gimnasios',mega_special_primal:'Incursiones Primigenias (eventos)',mega_special_elite:'Incursiones Élite + Meteorito',mega_special_gofest:'Super Mega Raids (GO Fest 2026)', mega_golden_title:'💡 Regla de Oro del Compañero',mega_golden_desc:'Una vez hayas registrado su Megaevolución <b>al menos una vez</b> en tu Pokédex, puedes poner cualquier miembro de su familia como <b>Compañero</b> y ganarás <b>5 Megaenergías por km caminado</b> (cada vez que encuentre un caramelo).', mega_stops_title:'📍 Misiones Fijas en Poképaradas',mega_stops_p1:'⚡ "Potencia un Pokémon 5 veces" → 10 Megaenergía aleatoria de:', mega_capture_title:'🎯 Misiones de captura:',mega_capture_fire:'🔥 10 tipo Fuego → <b>Charizard o Blaziken</b>',mega_capture_grass:'🌿 10 tipo Planta → <b>Venusaur o Sceptile</b>',mega_capture_water:'💧 10 tipo Agua → <b>Blastoise o Swampert</b>',mega_capture_normal:'⭕ 10 tipo Normal → <b>Pidgeot</b>', mega_info_title:'ℹ️ Información sobre MegaEvoluciones',mega_info_sub:'Requisitos y tiempos de espera por nivel', mega_th_level:'Nivel',mega_th_needed:'Mega-Evos necesarias',mega_th_wait:'Espera para GRATIS',mega_th_discount:'Descuento si lo haces antes', mega_row_base:'Base',mega_row_high:'Alto',mega_row_max:'Máximo',mega_row_supermax:'Super Max', mega_wait_7:'7 días',mega_wait_5:'5 días',mega_wait_3:'3 días',mega_wait_24h:'24 h',mega_special_needed:'Especial*', mega_disc_base:'Coste base reducido (ej. 40 de energía)',mega_disc_high:'50% de descuento sobre el nivel base',mega_disc_max:'75% de descuento sobre el nivel base',mega_disc_supermax:'Descuento casi total', mega_supermax_note:'<b>⚠️ Cómo llegar a Super Max:</b> Para desbloquear este cuarto nivel, primero debes tener al Pokémon en Nivel Máximo (nivel 3). Después, ya no te servirá seguir megaevolucionándolo día a día; tendrás que gastar un pago único de <b>5.000 de Megaenergía</b> directamente para potenciarlo a Super Max. Para acumular esa cantidad, la mejor opción es farmear las incursiones <b>Super Mega Raids</b>.', mod_welcome_title:'👋 ¡Bienvenido a TrackDex!',mod_welcome_p1:'Esta app te ayuda a <b>mejorar tus equipos Pokémon para incursiones</b>: lleva el control de cuáles tienes y cuáles te faltan, crea automáticamente <b>filtros para intercambiar con tus amigos</b> y ten siempre a la vista qué Pokémon necesitas priorizar… entre muchas otras cosas.',mod_welcome_p2:'Ve a tu <b>Perfil</b> y toca <b>«📖 Guía TrackDex»</b> para descubrir todo lo que puedes hacer.', mod_welcome_close_wait:'Cerrar (%n)',mod_welcome_close_ready:'Entendido, cerrar', mod_guia_title:'📖 Guía TrackDex',mod_guia_sub:'Toca cada función para saber qué hace. Las marcadas con ✅ ya las conoces.',mod_guia_understood:'✅ Entendido', mod_info_title:'ℹ️ ¿Para qué sirve esta app?',mod_info_p1:'<b>TrackDex</b> es un álbum personal para saber qué Pokémon tienes y cuáles te faltan de los <b>mejores atacantes por tipo</b> en incursiones. El objetivo es ayudarte a <b>invertir tus polvos de forma eficiente</b> y saber qué Pokémon vale la pena subir.', mod_info_links_title:'🔗 Enlaces útiles',mod_info_link1:'Mejores atacantes por tipo',mod_info_link2:'Mejores Dinamax por tipo',mod_info_link3:'Rotación actual de Dinamax',mod_info_link3_sub:'snacknap.com · actualizado cada 5 min', mod_info_dmax_title:'⚡ Dynamax y Mega Evolución',mod_info_dmax_p:'<b>Un Pokémon Dynamax puede hacer Mega Evolución</b>, pero no puede estar en ambas formas a la vez.<br>Mientras dure la Mega Evolución <b>(8 horas)</b>, ese Pokémon <b>no puede participar en combates Dynamax</b>.<br><span style="color:#555">💡 Solución urgente: Mega Evoluciona otro Pokémon de tu equipo. Al solo poder tener un Mega activo, el primero vuelve automáticamente a su forma normal y ya puede entrar en Max Battles.</span>', mod_info_cost_title:'💰 El coste real de subir un Pokémon',mod_info_cost_p:'<b>Nivel 1 → 40:</b> ~272.500 polvos · 273 caramelos<br><b>Nivel 40 → 50:</b> ~296.000 polvos · 296 caramelos XL<br><b>Total nivel 1 → 50: ~568.500 polvos</b><br><span style="color:#888">Shadow: +20% polvos y caramelos · Lucky: −50% polvos</span>', mod_info_cost_p2:'Subir un solo Pokémon al nivel 50 cuesta más de medio millón de polvos. Por eso tiene sentido <b>esperar a tener la versión Dinamax</b> si existe: obtienes el mismo Pokémon con la capacidad extra de los Max Battles sin gastar polvos de más en la versión normal.', mod_info_ivs_p:'La diferencia entre un Pokémon con IVs perfectos y uno con IVs bajos es <b>prácticamente irrelevante en raids</b>. Para atacantes Mega, Shadow o Dinamax con mucho ataque base, un IV de ataque 10 vs 15 supone menos del 2% de daño extra. <b>Es mucho más importante tener el Pokémon correcto que tener el hundo perfecto</b>. No descartes un buen atacante por tener IVs imperfectos.', mod_glossary_title:'📖 Guía de iconos', mod_glossary_legacy:'<strong>Ataque Legacy</strong><p>Movimiento especial que ya no se puede aprender normalmente. Solo se obtuvo durante eventos pasados (Días de la Comunidad). Para enseñárselo ahora se necesita una <b>MT Élite</b>, muy escasa.</p>', mod_glossary_shadow:'<strong>Shadow / Oscuro</strong><p>Pokémon capturado al derrotar al Team GO Rocket o en <b>Incursiones Oscuras</b>. Tienen <b>+20% de Ataque</b> pero <b>-20% de Defensa</b>. Son los más poderosos en raids si aguantan.</p>', mod_glossary_mega:'<strong>Mega Evolución</strong><p>Forma temporal potenciada. Las <b>piedras Mega</b> se consiguen en Mega Incursiones, misiones temporales o raramente en PokéParadas. Potencian a los aliados del mismo tipo en raid.</p>', mod_glossary_special:'<strong>Misión especial</strong><p>Pokémon obtenido completando una <b>Investigación Especial</b> o misión temporal. Suelen ser únicos o muy difíciles de conseguir de otra forma.</p>', mod_glossary_dps:'<strong>DPS (Daño Por Segundo)</strong><p>Mide el daño sostenido en raids. Valores de referencia a nivel 40 con IVs perfectos (15/15/15). Fuente: Dittobase 2026.</p>', mod_glossary_ivs:'<strong>IVs (Individual Values)</strong><p>Estadísticas de cada Pokémon: <b>Ataque, Defensa y Vida</b>, de 0 a 15. Un Pokémon con 15/15/15 es "hundo" (perfecto). En raids el Ataque es el más importante.</p>', daily_home:'🏠 Desde Casa', daily_h1_t:'⭐ Captura diaria / Girar PokéParada <span class="diff diff-easy">Fácil · 1 min</span>',daily_h1_b:'Activa la racha de polvos estelares. Solo necesitas capturar 1 Pokémon o girar 1 PokéParada al día.', daily_h2_t:'🎁 Abrir regalos <span class="diff diff-easy">Fácil · 4 min</span>',daily_h2_b:'20 diarios, 40+ en eventos — dan polvos estelares extra.<ul><li>Salta la animación haciendo clicks rápidos.</li><li>Activa <b>"Abrir regalos con mochila llena"</b> para obtener solo polvos sin llenar el inventario.</li></ul>', daily_h3_t:'🎈 Globo del Team GO Rocket <span class="diff diff-easy">Fácil · 3 min</span>',daily_h3_b:'Aparece a las <b>00:00 · 06:00 · 12:00 · 18:00</b>. Lucha contra ellos para conseguir Pokémon oscuros.', daily_h4_t:'🛍️ Pack diario gratuito <span class="diff diff-easy">Fácil · 1 min</span>',daily_h4_b:'Normalmente basura, pero puede contener pases de incursión premium, MTs, ataques cargados...<div class="diarias-tip">💡 Si por la mañana es basura, <b>no lo reclames</b>. Vuelve a mirar a las 18:00+, puede cambiar. Si por la noche sigue siendo basura, reclámalos para que salga uno nuevo al día siguiente.</div>', daily_h5_t:'🤝 Corazones con tu compañero <span class="diff diff-easy">Fácil · 2 min</span>',daily_h5_b:'Sube un nivel extra por encima del máximo (50+1), haciéndolo más fuerte en raids.<div class="diarias-tip">💡 Puedes cambiar de compañero hasta <b>20 veces al día</b>. Haz compañeros a tus mejores atacantes de raids.</div>', daily_h6_t:'⚔️ Combates PvP <span class="diff diff-hard">Difícil · 40 min</span>',daily_h6_b:'Mayor fuente de polvos estelares, caramelos raros y MTs de ataques cargados y rápidos.<ul><li>Solo puedes hacer <b>5 rondas de 5 combates</b> al día.</li><li>En <b>Rango 20</b> se añaden los legendarios en rotación actual a la pool de recompensas.</li></ul>', daily_h7_t:'🔄 Intercambios diarios <span class="diff diff-medium">Media · 60 min</span>',daily_h7_b:'Hasta 100 intercambios diarios con otra persona.<ul><li>Obtienes caramelos extra del Pokémon enviado — mejor que recapturarlo.</li><li>Suele dar <b>1 caramelo XL garantizado</b> + caramelos normales.</li><li>Gana hasta <b>100 XL + 300 caramelos normales</b> al día.</li><li>Probabilidad de intercambios <b>Lucky</b> (IVs garantizados altos).</li></ul>', daily_h8_t:'📱 Organiza tus Pokémon',daily_h8_b:'Esta app te ayuda: en <b>Pokémon Objetivo</b> tienes el filtro de los que necesitas para pegar directamente en Pokémon GO.', daily_out:'🚶 Al Salir a Caminar', daily_o1_t:'🏟️ Pase de incursión diario gratuito',daily_o1_b:'Gástalo y consigue el nuevo en cualquier gimnasio. ¡No te quedes sin él!', daily_o2_t:'🌀 Incienso diario gratuito',daily_o2_b:'Úsalo para conseguir las <b>aves legendarias de Galar</b>: Articuno, Zapdos y Moltres de Galar.', daily_o3_t:'🗺️ Misión de PokéParada diaria',daily_o3_b:'Completa una misión al día. Cada <b>7 días</b> recibes un encuentro con un Pokémon raro o legendario garantizado.<div class="diarias-tip">💡 Ten siempre una <b>misión de mapeo sin completar</b> encima (ocupa el 4º hueco y no cuenta) — fuerza a las demás PokéParadas a mostrar su misión oculta.</div>', daily_o4_t:'🏅 Reclama gimnasios',daily_o4_b:'Defiende gimnasios para acumular <b>PokéMonedas</b> gratis (máx 50 al día).', daily_o5_t:'🥚 Pon huevos a incubar',daily_o5_b:'Aprovecha el camino para incubar huevos. Prioriza los de 12km (huevos rojos) por sus recompensas.', daily_o6_t:'🚀 Lucha contra el Team Rocket',daily_o6_b:'Los líderes y el jefe dan los <b>mejores Pokémon oscuros del juego</b>. Prioriza siempre a Sierra, Arlo, Cliff y Giovanni.', daily_o7_t:'🛤️ Haz rutas',daily_o7_b:'Dan células de Zygarde, corazón extra con tu compañero y caramelos raros.<div class="diarias-tip">💡 El <b>día 7 de racha</b> de rutas da recompensas masivas: MTs, grandes cantidades de polvo estelar y más.</div>', daily_o8_t:'✨ Misiones de megaenergía en PokéParadas',daily_o8_b:'Son las misiones más valiosas. Busca activamente las que den megaenergía de Pokémon.<div class="diarias-tip">💡 <b>No cojas una PokéParada nueva sin tener hueco</b> para misiones, podrías perder una de megaenergía.</div>', daily_o9_t:'👥 Misiones de grupo <span class="diff diff-medium">Media</span>',daily_o9_b:'Si sales con alguien, podéis formar grupos para conseguir misiones de grupo extra con posibilidad de megaenergía de ciertos Pokémon.', legacy_howto_title:'¿Cómo se obtienen? <span id="lg-howto-arrow" style="float:right;font-size:12px;color:#888">▾</span>', legacy_howto_body:'Hay dos formas principales:<br><br><b>🎉 En eventos (gratis):</b> evolucionando al Pokémon base hasta su última etapa, o capturándolo en incursiones/salvaje durante las horas del evento.<br><br><b>💳 En cualquier momento (de pago):</b> usando una <b>MT Élite</b> (rápida o cargada). Son objetos raros que se consiguen al final de las temporadas PvP (Rango 19+) o en packs de la tienda.<label style="display:block;margin-top:12px;font-size:12px;font-weight:600;color:#888;cursor:pointer"><input type="checkbox" id="lg-howto-read" onchange="markRead(\'legacyHowto\', this.checked)" style="vertical-align:middle"> Marcar como leído (lo envía al final)</label>', legacy_thisyear:'📅 Legacy de este año (Ene-Jul 2026)',legacy_upcoming:'🔜 Confirmados y próximos', legacy_golden_title:'⚠️ Regla de oro del día del evento',legacy_golden_sub:'Para que el juego te dé el ataque Legacy al evolucionar (sin gastar MT Élite):', legacy_warn1:'<b>⏰ Ventana horaria:</b> evoluciona durante las 3 h del evento y hasta 4-5 h después. Un minuto tarde = ataque normal.', legacy_warn2:'<b>📡 Cuidado con el GPS:</b> si pierde la señal justo al evolucionar, el servidor no sabrá que estás en el evento y te dará ataque común.', legacy_warn3:'<b>🚫 Sin Frustración:</b> si es un Pokémon Oscuro, no puede tener Frustración o bloqueará el Legacy. Quítasela antes en un evento del Team GO Rocket.', stops_season:'Temporada: <b style="color:#c2185b">Forever Forward</b> · 📌 fija tus misiones favoritas arriba',stops_pinned:'📌 Fijadas', tips_title:'✏️ Consejos (admin)',tips_save:'💾 Guardar',tips_desc:'Los cambios se publican para todos al pulsar 💾 Guardar. Puedes usar &lt;b&gt;negrita&lt;/b&gt; en el texto. Los consejos se muestran en orden aleatorio.',tips_add:'➕ Añadir consejo (arriba)',tips_emoji_title:'Elige un emoji', notif_title:'🔔 Notificaciones',notif_perm:'<b>Permiso necesario.</b> Toca cualquier casilla y acepta el aviso del navegador para recibir recordatorios.', notif_custom_title:'➕ Recordatorio personalizado',notif_new_ph:'¿De qué te aviso?',notif_add:'Añadir', notif_info_title:'🔔 Cómo funcionan',notif_info_p1:'Marca la casilla de lo que quieras que te recuerde y elige la hora. Se repite <b>todos los días</b> a esa hora.',notif_info_p2:'Los avisos que ocurren varias veces al día, como el <b>globo del Team GO Rocket</b>, se despliegan con ▾ para activar solo los pases que te interesen.',notif_info_p3:'⚠️ De momento los recordatorios se lanzan desde tu dispositivo, así que <b>necesitan que TrackDex esté instalada y abierta o en segundo plano</b>. Los avisos con la app cerrada del todo llegarán en una próxima versión.', comm_dm_btn:'✉️ Mensajes privados',comm_dm_desc:'Para escribir a alguien en privado, entra en <b>Miembros</b> y toca ✉️ junto a su nombre. Solo esa persona y tú veréis la conversación.',comm_leave_btn:'🚪 Abandonar esta comunidad',comm_del_btn:'💥 Borrar esta comunidad (eres el creador)', dm_input_ph:'Escribe un mensaje…',dm_load_error:'No se pudo cargar la conversación.',dm_no_messages:'Aún no hay mensajes con',dm_write_first:'¡Escribe el primero! 👋', news_current_version:'Versión actual:', filtro_title:'🛠️ Crea tu filtro',filtro_toast_warn:'Ten en cuenta que si editas el filtro a mano puedes romperlo por error', filtro_intro:'📅 <b>Filtro Normal (Caramelos)</b>: todos los que aún coleccionas; intercámbialos cualquier día por caramelos. 🍀 <b>Filtro Lucky (Bases)</b>: los que aún necesitan buena base; búscalos en el día de suerte aumentada.', filtro_normal_label:'📅 Filtro Normal (Caramelos)',filtro_copy_normal:'📋 Copiar Filtro Normal (Caramelos)', filtro_add_label:'Añadir Pokémon (al filtro Resto):',filtro_add_ph:'ej. pikachu', filtro_lucky_label:'🍀 Filtro Lucky (Bases)',filtro_trading_with:'Comerciando con',filtro_choose_trade:'Elige con quién vas a comerciar para ver el Filtro Lucky',filtro_select_trainer:'Selecciona un entrenador...',filtro_copy_lucky:'📋 Copiar Filtro Lucky (Bases)', obj_info_p1:'Esta pantalla te dice <b>qué Pokémon capturar y cuántos caramelos te faltan</b> para completar tus equipos (subir todas tus copias al máximo). Toca un Pokémon para apuntar los caramelos normales y XL que ya tienes: la lista se reordena poniendo arriba lo que más te falta.', obj_info_p2:'El orden usa la equivalencia real del juego: <b>1 caramelo XL = 100 caramelos normales</b>. Cuando completas los XL necesarios de un Pokémon, se marca ✓ y baja al final.', obj_info_candy_title:'🍬 Caramelos para subir un Pokémon al máximo',obj_info_candy_body:'Normal / Mega: ~250 + 296 XL<br>Purificado: ~220 + 268 XL<br>Oscuro: ~298 + 360 XL<br>⚡ Dynamax: ~600 + 416 XL (base + habilidades)', obj_create_filter:'🛠️ Crea tu filtro para Pokémon GO',obj_only_wanted:'Solo Deseados',obj_choose:'Elige…',obj_completed_label:'✅ Completado',obj_dmax_warn:'Falta decir si {n} es Dinamax, ¡esto afecta a tu filtro! Ve a Mis Pokémon y responde "⚡ ¿Es Dinamax?" en su ficha.', leg_title:'🏆 GoFest Legendary Tracker',leg_sat:'📅 Sáb',leg_sun:'📅 Dom', trk_view_progress:'Ver progreso de:',trk_readonly:'👁 Solo lectura',trk_got:'✅ Conseguido',trk_later:'⏳ Later',trk_prio:'★ Prioritario',trk_unob:'🚫 No Obtenible',trk_search_ph:'Buscar…',trk_reset:'Reiniciar', hub_legendary:'🐉 Legendarios<br><span style="font-size:11px;font-weight:400;opacity:.75">Raids 5★ — GO Fest y repeticiones</span>', hub_pikachu:'⚡ Pikachu Skins Event<br><span style="font-size:11px;font-weight:400;opacity:.75">Special Anniversary Celebration · 13–20 jul · 3 celebrations</span>', pika_title:'⚡ Pikachu Skins Event',
+    rr_not_obtained:'🆕 No obtenido', rr_obtained:'Obtenido', rr_pinned_header:'📌 FIJADOS', rr_pin_title:'Fijar', rr_female_grunt:'Recluta mujer', rr_male_grunt:'Recluta hombre', rr_no_lineup_data:'Sin datos de lineup confirmados', rr_possible:'posibles', rr_approx_translation:'(traducción aproximada, no confirmada)',
+    comm_admin_tag:'(admin com.)', comm_you_tag:'(tú)', comm_no_members:'Aún no hay miembros', comm_kick_title:'Expulsar', comm_delegate_title:'Hacer administrador', comm_dm_title:'Mensaje privado', comm_only_admin_can_delegate:'Solo el administrador actual puede delegar', comm_already_admin:'Ya eres el administrador', comm_now_admin:'%n ahora es administrador', comm_delegate_confirm:'¿Hacer a "%n" el nuevo administrador de "%c"?\n\nDejarás de ser administrador de esta comunidad (solo el nuevo admin podría devolverte el puesto).', comm_no_team_yet:'Este miembro aún no ha creado su equipo', comm_home_btn:'Inicio', comm_view_btn:'Ver', comm_desired_pokemon:'Pokémon deseados',
+    filtro_self_trade:'🙋 Yo',
   },
   en:{login_sub:'Sign in to your account',user:'Username',pass:'Password',user_ph:'your username',pass_ph:'your password',remember:'Remember me on this device',disclaimer:'TrackDex is a non-profit fan app, not affiliated with Nintendo, Niantic, The Pokémon Company or Game Freak. Pokémon and all related names and images are trademarks of their respective owners.',privacy:'Privacy policy',enter:'Sign in',no_account:"Don't have an account?",create_account:'Create account',reg_sub:'Just once, for all your communities',user_ph2:'letters, numbers, - or _',pass_ph2:'at least 6 characters',pass2:'Repeat password',pass2_ph:'repeat your password',have_account:'Already have an account?',signin:'Sign in',
     communities:'Communities',logout:'Sign out',create_comm:'➕ Create community',comm_name:'Community name',comm_pass:'Community password',comm_alias:'Your nickname in this community',create:'Create',join_sub:'Pick your nickname and enter the password',alias_ph:'how others will see you',pass_only:'password',
@@ -7920,9 +7928,13 @@ const I18N={
     detail_tab_mine:'My Pokémon',detail_tab_rank:'DPS Ranking',detail_readonly:'👁 Read-only —',detail_rank_raid:'⚔️ Raids',
     tc_title:'Type Effectiveness',tc_attacking:'⚔️ Attacking',tc_notvery:'x0.625 (not very effective)',tc_super:'x1.6 (super effective)',tc_select:'Select 1 or 2 types (tap to select/deselect)',tc_defending:'🛡️ Defending',tc_doubleresist:'x0.390 (double resist.)',
     active_badge:'ACTIVE', mega_dev_title:'🛠️ Developer Mode',mega_dev_desc:'Turn on to mark which Megas are in rotation. Changes are saved for all players.', mega_raids_title:'🥊 Current Mega Raids',mega_raids_subtitle:'The Megas in raids this month. The active one is highlighted.', mega_energy_title:'🏙️ Mega Energy at PokéStops',mega_energy_desc:'Fixed tasks that give mega energy. Always check for a free slot before spinning a new PokéStop.', mega_capture10:'🎯 Catch 10 of a type (10 Mega Energy)',mega_powerup:'💪 Power up a Pokémon', mega_group_title:'👥 Party Play Tasks',mega_group_desc:'20 Mega Energy for "Win 2 raids" or "Defeat 3 Team GO Rocket Grunts"', mega_special_title:'⚠️ Special Methods',mega_special_desc:'These are NOT in the normal rotation — they require a specific method', mega_special_photodisc:'Spinning Gym Photo Discs',mega_special_primal:'Primal Raids (events)',mega_special_elite:'Elite Raids + Meteorite',mega_special_gofest:'Super Mega Raids (GO Fest 2026)', mega_golden_title:'💡 The Golden Buddy Rule',mega_golden_desc:'Once you\'ve registered its Mega Evolution <b>at least once</b> in your Pokédex, you can set any member of its family as your <b>Buddy</b> and earn <b>5 Mega Energy per km walked</b> (each time it finds a candy).', mega_stops_title:'📍 Fixed PokéStop Tasks',mega_stops_p1:'⚡ "Power up a Pokémon 5 times" → 10 random Mega Energy from:', mega_capture_title:'🎯 Catch tasks:',mega_capture_fire:'🔥 10 Fire type → <b>Charizard or Blaziken</b>',mega_capture_grass:'🌿 10 Grass type → <b>Venusaur or Sceptile</b>',mega_capture_water:'💧 10 Water type → <b>Blastoise or Swampert</b>',mega_capture_normal:'⭕ 10 Normal type → <b>Pidgeot</b>', mega_info_title:'ℹ️ About Mega Evolution',mega_info_sub:'Requirements and wait times per level', mega_th_level:'Level',mega_th_needed:'Mega Evos needed',mega_th_wait:'Wait for FREE',mega_th_discount:'Discount if done early', mega_row_base:'Base',mega_row_high:'High',mega_row_max:'Max',mega_row_supermax:'Super Max', mega_wait_7:'7 days',mega_wait_5:'5 days',mega_wait_3:'3 days',mega_wait_24h:'24 h',mega_special_needed:'Special*', mega_disc_base:'Reduced base cost (e.g. 40 energy)',mega_disc_high:'50% discount over base level',mega_disc_max:'75% discount over base level',mega_disc_supermax:'Almost total discount', mega_supermax_note:'<b>⚠️ How to reach Super Max:</b> To unlock this fourth level, you must first have the Pokémon at Max Level (level 3). After that, evolving it day by day no longer helps; you\'ll need to spend a one-time payment of <b>5,000 Mega Energy</b> directly to power it up to Super Max. The best way to build up that amount is farming <b>Super Mega Raids</b>.', mod_welcome_title:'👋 Welcome to TrackDex!',mod_welcome_p1:'This app helps you <b>improve your Pokémon raid teams</b>: track which ones you have and which you\'re missing, automatically create <b>filters to trade with your friends</b>, and always see which Pokémon to prioritize… among many other things.',mod_welcome_p2:'Go to your <b>Profile</b> and tap <b>«📖 TrackDex Guide»</b> to discover everything you can do.', mod_welcome_close_wait:'Close (%n)',mod_welcome_close_ready:'Got it, close', mod_guia_title:'📖 TrackDex Guide',mod_guia_sub:'Tap each feature to learn what it does. Those marked with ✅ you already know.',mod_guia_understood:'✅ Got it', mod_info_title:'ℹ️ What is this app for?',mod_info_p1:'<b>TrackDex</b> is a personal album to know which Pokémon you have and which you\'re missing among the <b>best attackers per type</b> in raids. The goal is to help you <b>invest your stardust efficiently</b> and know which Pokémon are worth powering up.', mod_info_links_title:'🔗 Useful links',mod_info_link1:'Best attackers per type',mod_info_link2:'Best Dynamax per type',mod_info_link3:'Current Dynamax rotation',mod_info_link3_sub:'snacknap.com · updated every 5 min', mod_info_dmax_title:'⚡ Dynamax and Mega Evolution',mod_info_dmax_p:'<b>A Dynamax Pokémon can Mega Evolve</b>, but it can\'t be in both forms at once.<br>While the Mega Evolution lasts <b>(8 hours)</b>, that Pokémon <b>cannot take part in Max Battles</b>.<br><span style="color:#555">💡 Quick fix: Mega Evolve another Pokémon on your team. Since only one Mega can be active, the first one automatically reverts to its normal form and can enter Max Battles again.</span>', mod_info_cost_title:'💰 The real cost of powering up a Pokémon',mod_info_cost_p:'<b>Level 1 → 40:</b> ~272,500 stardust · 273 candy<br><b>Level 40 → 50:</b> ~296,000 stardust · 296 XL candy<br><b>Total level 1 → 50: ~568,500 stardust</b><br><span style="color:#888">Shadow: +20% stardust and candy · Lucky: −50% stardust</span>', mod_info_cost_p2:'Powering up a single Pokémon to level 50 costs over half a million stardust. That\'s why it makes sense to <b>wait for the Dynamax version</b> if it exists: you get the same Pokémon with the extra Max Battles ability without spending extra stardust on the normal version.', mod_info_ivs_p:'The difference between a Pokémon with perfect IVs and one with low IVs is <b>practically irrelevant in raids</b>. For Mega, Shadow, or Dynamax attackers with high base attack, an attack IV of 10 vs 15 means less than 2% extra damage. <b>Having the right Pokémon matters far more than having perfect IVs</b>. Don\'t rule out a good attacker just because of imperfect IVs.', mod_glossary_title:'📖 Icon Guide', mod_glossary_legacy:'<strong>Legacy Move</strong><p>A special move that can no longer be learned normally. It was only available during past events (Community Days). To teach it now you need an <b>Elite TM</b>, which is very scarce.</p>', mod_glossary_shadow:'<strong>Shadow</strong><p>Pokémon caught by defeating Team GO Rocket or in <b>Shadow Raids</b>. They have <b>+20% Attack</b> but <b>-20% Defense</b>. They\'re the most powerful raid attackers if they can take the hits.</p>', mod_glossary_mega:'<strong>Mega Evolution</strong><p>A temporary powered-up form. <b>Mega stones</b> are obtained from Mega Raids, timed research, or rarely from PokéStops. They boost allies of the same type in a raid.</p>', mod_glossary_special:'<strong>Special research</strong><p>A Pokémon obtained by completing a <b>Special Research</b> quest or timed research. Usually unique or very hard to obtain otherwise.</p>', mod_glossary_dps:'<strong>DPS (Damage Per Second)</strong><p>Measures sustained damage in raids. Reference values at level 40 with perfect IVs (15/15/15). Source: Dittobase 2026.</p>', mod_glossary_ivs:'<strong>IVs (Individual Values)</strong><p>Each Pokémon\'s stats: <b>Attack, Defense and HP</b>, from 0 to 15. A Pokémon with 15/15/15 is a "hundo" (perfect). In raids, Attack is the most important.</p>', daily_home:'🏠 From Home', daily_h1_t:'⭐ Daily catch / Spin a PokéStop <span class="diff diff-easy">Easy · 1 min</span>',daily_h1_b:'Activates the stardust streak. You only need to catch 1 Pokémon or spin 1 PokéStop per day.', daily_h2_t:'🎁 Open gifts <span class="diff diff-easy">Easy · 4 min</span>',daily_h2_b:'20 daily, 40+ during events — give extra stardust.<ul><li>Skip the animation by tapping quickly.</li><li>Turn on <b>"Open gifts with full backpack"</b> to get only stardust without filling your inventory.</li></ul>', daily_h3_t:'🎈 Team GO Rocket balloon <span class="diff diff-easy">Easy · 3 min</span>',daily_h3_b:'Appears at <b>00:00 · 06:00 · 12:00 · 18:00</b>. Battle them to get Shadow Pokémon.', daily_h4_t:'🛍️ Free daily box <span class="diff diff-easy">Easy · 1 min</span>',daily_h4_b:'Usually junk, but can contain premium raid passes, TMs, charged attacks...<div class="diarias-tip">💡 If it\'s junk in the morning, <b>don\'t claim it</b>. Check again at 18:00+, it may change. If it\'s still junk at night, claim it so a new one appears the next day.</div>', daily_h5_t:'🤝 Buddy hearts <span class="diff diff-easy">Easy · 2 min</span>',daily_h5_b:'Gain an extra level above the max (50+1), making it stronger in raids.<div class="diarias-tip">💡 You can change buddy up to <b>20 times a day</b>. Make your best raid attackers your buddy.</div>', daily_h6_t:'⚔️ PvP battles <span class="diff diff-hard">Hard · 40 min</span>',daily_h6_b:'The biggest source of stardust, rare candy and fast/charged move TMs.<ul><li>You can only do <b>5 sets of 5 battles</b> per day.</li><li>At <b>Rank 20</b>, the legendaries currently in rotation are added to the reward pool.</li></ul>', daily_h7_t:'🔄 Daily trades <span class="diff diff-medium">Medium · 60 min</span>',daily_h7_b:'Up to 100 daily trades with another person.<ul><li>You get extra candy from the traded Pokémon — better than recatching it.</li><li>Usually gives <b>1 guaranteed XL candy</b> + normal candy.</li><li>Earn up to <b>100 XL + 300 normal candy</b> per day.</li><li>Chance of <b>Lucky</b> trades (guaranteed high IVs).</li></ul>', daily_h8_t:'📱 Organize your Pokémon',daily_h8_b:'This app helps you: in <b>Target Pokémon</b> you have the filter for the ones you need, ready to paste directly into Pokémon GO.', daily_out:'🚶 While Out Walking', daily_o1_t:'🏟️ Free daily raid pass',daily_o1_b:'Use it up and get a new one at any gym. Don\'t let it go to waste!', daily_o2_t:'🌀 Free daily incense',daily_o2_b:'Use it to get the <b>Galarian legendary birds</b>: Galarian Articuno, Zapdos and Moltres.', daily_o3_t:'🗺️ Daily PokéStop task',daily_o3_b:'Complete one task per day. Every <b>7 days</b> you get a guaranteed encounter with a rare or legendary Pokémon.<div class="diarias-tip">💡 Always keep an <b>uncompleted mapping task</b> on hand (it takes the 4th slot and doesn\'t count) — it forces other PokéStops to show their hidden task.</div>', daily_o4_t:'🏅 Claim gyms',daily_o4_b:'Defend gyms to earn free <b>PokéCoins</b> (max 50 per day).', daily_o5_t:'🥚 Put eggs in an incubator',daily_o5_b:'Use your walking to hatch eggs. Prioritize 12km eggs (red eggs) for their rewards.', daily_o6_t:'🚀 Fight Team Rocket',daily_o6_b:'Leaders and the boss give the <b>best Shadow Pokémon in the game</b>. Always prioritize Sierra, Arlo, Cliff and Giovanni.', daily_o7_t:'🛤️ Do routes',daily_o7_b:'Give Zygarde cells, an extra buddy heart and rare candy.<div class="diarias-tip">💡 <b>Day 7</b> of a routes streak gives massive rewards: TMs, large amounts of stardust and more.</div>', daily_o8_t:'✨ Mega energy tasks at PokéStops',daily_o8_b:'These are the most valuable tasks. Actively look for the ones that give Pokémon mega energy.<div class="diarias-tip">💡 <b>Don\'t take a new PokéStop without a free slot</b> for tasks, you could miss a mega energy one.</div>', daily_o9_t:'👥 Group tasks <span class="diff diff-medium">Medium</span>',daily_o9_b:'If you go out with someone, you can form groups to get extra group tasks with a chance of mega energy for certain Pokémon.', legacy_howto_title:'How do you get them? <span id="lg-howto-arrow" style="float:right;font-size:12px;color:#888">▾</span>', legacy_howto_body:'There are two main ways:<br><br><b>🎉 During events (free):</b> by evolving the base Pokémon to its final stage, or catching it in raids/the wild during event hours.<br><br><b>💳 At any time (paid):</b> using an <b>Elite TM</b> (fast or charged). These are rare items obtained at the end of PvP seasons (Rank 19+) or in shop packs.<label style="display:block;margin-top:12px;font-size:12px;font-weight:600;color:#888;cursor:pointer"><input type="checkbox" id="lg-howto-read" onchange="markRead(\'legacyHowto\', this.checked)" style="vertical-align:middle"> Mark as read (sends it to the bottom)</label>', legacy_thisyear:'📅 Legacy this year (Jan-Jul 2026)',legacy_upcoming:'🔜 Confirmed and upcoming', legacy_golden_title:'⚠️ Golden rule for event day',legacy_golden_sub:'For the game to give you the Legacy move when evolving (without spending an Elite TM):', legacy_warn1:'<b>⏰ Time window:</b> evolve during the event\'s 3 hours and up to 4-5 hours after. One minute late = normal move.', legacy_warn2:'<b>📡 Watch your GPS:</b> if it loses signal right when evolving, the server won\'t know you\'re at the event and will give you the common move.', legacy_warn3:'<b>🚫 No Frustration:</b> if it\'s a Shadow Pokémon, it can\'t have Frustration or it will block the Legacy move. Remove it beforehand at a Team GO Rocket event.', stops_season:'Season: <b style="color:#c2185b">Forever Forward</b> · 📌 pin your favorite tasks above',stops_pinned:'📌 Pinned', tips_title:'✏️ Tips (admin)',tips_save:'💾 Save',tips_desc:'Changes are published for everyone when you press 💾 Save. You can use &lt;b&gt;bold&lt;/b&gt; in the text. Tips are shown in random order.',tips_add:'➕ Add tip (top)',tips_emoji_title:'Choose an emoji', notif_title:'🔔 Notifications',notif_perm:'<b>Permission needed.</b> Tap any checkbox and accept the browser prompt to receive reminders.', notif_custom_title:'➕ Custom reminder',notif_new_ph:'What should I remind you of?',notif_add:'Add', notif_info_title:'🔔 How it works',notif_info_p1:'Check the box for what you want to be reminded of and pick a time. It repeats <b>every day</b> at that time.',notif_info_p2:'Reminders that happen several times a day, like the <b>Team GO Rocket balloon</b>, expand with ▾ so you can enable only the passes you care about.',notif_info_p3:'⚠️ For now reminders are triggered from your device, so they <b>require TrackDex to be installed and open or running in the background</b>. Notifications with the app fully closed are coming in a future update.', comm_dm_btn:'✉️ Private messages',comm_dm_desc:'To write to someone privately, go to <b>Members</b> and tap ✉️ next to their name. Only that person and you will see the conversation.',comm_leave_btn:'🚪 Leave this community',comm_del_btn:'💥 Delete this community (you are the creator)', dm_input_ph:'Type a message…',dm_load_error:'Could not load the conversation.',dm_no_messages:'No messages yet with',dm_write_first:'Write the first one! 👋', news_current_version:'Current version:', filtro_title:'🛠️ Create your filter',filtro_toast_warn:'Keep in mind that if you edit the filter by hand you could break it by accident', filtro_intro:'📅 <b>Normal Filter (Candy)</b>: everything you\'re still collecting; trade it any day for candy. 🍀 <b>Lucky Filter (Bases)</b>: the ones that still need a good base; look for them on the boosted luck day.', filtro_normal_label:'📅 Normal Filter (Candy)',filtro_copy_normal:'📋 Copy Normal Filter (Candy)', filtro_add_label:'Add Pokémon (to the Rest filter):',filtro_add_ph:'e.g. pikachu', filtro_lucky_label:'🍀 Lucky Filter (Bases)',filtro_trading_with:'Trading with',filtro_choose_trade:'Choose who you\'re trading with to see the Lucky Filter',filtro_select_trainer:'Select a trainer...',filtro_copy_lucky:'📋 Copy Lucky Filter (Bases)', obj_info_p1:'This screen tells you <b>which Pokémon to catch and how much candy you\'re missing</b> to complete your teams (fully power up all your copies). Tap a Pokémon to log the normal and XL candy you already have: the list re-sorts putting what you need most on top.', obj_info_p2:'The order uses the game\'s real ratio: <b>1 XL candy = 100 normal candy</b>. When you complete the XL candy a Pokémon needs, it\'s marked ✓ and moves to the bottom.', obj_info_candy_title:'🍬 Candy to fully power up a Pokémon',obj_info_candy_body:'Normal / Mega: ~250 + 296 XL<br>Purified: ~220 + 268 XL<br>Shadow: ~298 + 360 XL<br>⚡ Dynamax: ~600 + 416 XL (base + moves)', obj_create_filter:'🛠️ Create your Pokémon GO filter',obj_only_wanted:'Only Wanted',obj_choose:'Choose…',obj_completed_label:'✅ Completed',obj_dmax_warn:'You still need to say whether {n} is Dynamax, this affects your filter! Go to My Pokémon and answer "⚡ Is it Dynamax?" on its card.', leg_title:'🏆 GoFest Legendary Tracker',leg_sat:'📅 Sat',leg_sun:'📅 Sun', trk_view_progress:'View progress of:',trk_readonly:'👁 Read-only',trk_got:'✅ Obtained',trk_later:'⏳ Later',trk_prio:'★ Priority',trk_unob:'🚫 Not obtainable',trk_search_ph:'Search…',trk_reset:'Reset', hub_legendary:'🐉 Legendaries<br><span style="font-size:11px;font-weight:400;opacity:.75">5★ Raids — GO Fest and reruns</span>', hub_pikachu:'⚡ Pikachu Skins Event<br><span style="font-size:11px;font-weight:400;opacity:.75">Special Anniversary Celebration · Jul 13–20 · 3 celebrations</span>', pika_title:'⚡ Pikachu Skins Event',
+    rr_not_obtained:'🆕 Not obtained', rr_obtained:'Obtained', rr_pinned_header:'📌 PINNED', rr_pin_title:'Pin', rr_female_grunt:'Female Grunt', rr_male_grunt:'Male Grunt', rr_no_lineup_data:'No confirmed lineup data', rr_possible:'possible', rr_approx_translation:'(approximate translation, unconfirmed)',
+    comm_admin_tag:'(community admin)', comm_you_tag:'(you)', comm_no_members:'No members yet', comm_kick_title:'Kick', comm_delegate_title:'Make admin', comm_dm_title:'Private message', comm_only_admin_can_delegate:'Only the current admin can delegate', comm_already_admin:'You are already the admin', comm_now_admin:'%n is now the community admin', comm_delegate_confirm:'Make "%n" the new admin of "%c"?\n\nYou will stop being the admin of this community (only the new admin could give you the role back).', comm_no_team_yet:"This member hasn't created their team yet", comm_home_btn:'Home', comm_view_btn:'View', comm_desired_pokemon:'wanted Pokémon',
+    filtro_self_trade:'🙋 Me',
   }
 };
 function getLang(){ try{ return localStorage.getItem('td_lang')||'es'; }catch(e){ return 'es'; } }
+function tr(key, fallback){ const d=I18N[getLang()]||I18N.es; return (d && d[key]) || fallback || key; }
 function applyLang(){
   const d=I18N[getLang()]||I18N.es;
   document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(d[k]) el.innerHTML=d[k]; });
@@ -8014,9 +8026,6 @@ async function delDM(id){
   try{ await db.collection('dms').doc(_dmConv).collection('messages').doc(id).delete(); }
   catch(e){ showToast('No se pudo borrar'); }
 }
-// compat: por si queda alguna llamada al chat antiguo
-function chatStop(){ dmStop(); }
-function chatStart(){}
 async function kickMember(uid){
   const c=ST.currentCommunity; if(!c||!c.members||!c.members[uid]) return;
   const alias=c.members[uid].alias||uid;
@@ -8037,15 +8046,16 @@ async function kickMember(uid){
 async function delegateAdmin(uid){
   const c=ST.currentCommunity; if(!c||!c.members||!c.members[uid]) return;
   const iAmOwner = c.ownerId===ST.globalUserId || isAdminUser(ST.globalUserId);
-  if(!iAmOwner){ showToast('Solo el administrador actual puede delegar'); return; }
-  if(uid===ST.globalUserId){ showToast('Ya eres el administrador'); return; }
+  if(!iAmOwner){ showToast(tr('comm_only_admin_can_delegate','Solo el administrador actual puede delegar')); return; }
+  if(uid===ST.globalUserId){ showToast(tr('comm_already_admin','Ya eres el administrador')); return; }
   const alias=c.members[uid].alias||uid;
-  if(!confirm('¿Hacer a "'+alias+'" el nuevo administrador de "'+(c.displayName||c.id)+'"?\n\nDejarás de ser administrador de esta comunidad (solo el nuevo admin podría devolverte el puesto).')) return;
+  const confirmMsg = tr('comm_delegate_confirm','¿Hacer a "%n" el nuevo administrador de "%c"?\n\nDejarás de ser administrador de esta comunidad (solo el nuevo admin podría devolverte el puesto).').replace('%n',alias).replace('%c',(c.displayName||c.id));
+  if(!confirm(confirmMsg)) return;
   Object.keys(c.members).forEach(k=>{ if(c.members[k]) c.members[k].isOwner=(k===uid); });
   c.ownerId=uid;
   try{ await db.collection('communities').doc(c.id).set(c); }
   catch(e){ showToast('Error al delegar: '+(e.message||e)); return; }
-  showToast('🔑 '+alias+' es ahora el administrador de la comunidad');
+  showToast('🔑 '+tr('comm_now_admin','%n ahora es administrador').replace('%n',alias));
   renderMembers();
 }
 function showMembers(){
@@ -8060,7 +8070,7 @@ function renderMembers(){
   const el = document.getElementById('profiles-list');
   const back = '<button class="btn-enter" style="width:100%;margin-bottom:12px" onclick="openComunidad()">← Volver a Comunidad</button>';
   const members = (ST.currentCommunity && ST.currentCommunity.members) ? Object.entries(ST.currentCommunity.members) : [];
-  if(!members.length){ el.innerHTML = back+'<p style="color:#aaa;text-align:center;padding:20px">Aún no hay miembros</p>'; return; }
+  if(!members.length){ el.innerHTML = back+'<p style="color:#aaa;text-align:center;padding:20px">'+tr('comm_no_members','Aún no hay miembros')+'</p>'; return; }
   el.innerHTML = back + members.map(([uid, m])=>{
     const alias = (m && m.alias) ? m.alias : uid;
     const idx = ST.profiles.findIndex(p=>p.name===alias);
@@ -8068,22 +8078,21 @@ function renderMembers(){
     const oc = prof ? countOwnedDesired(prof) : {owned:0,total:0};
     const isMe = uid === ST.globalUserId;
     const ini = alias.substring(0,2).toUpperCase();
-    const owner = (m && m.isOwner) ? ' <span style="color:#CC0000;font-size:11px;font-weight:700">(admin com.)</span>' : '';
-    const meTag = isMe ? ' <span style="color:#2e7d32;font-size:11px;font-weight:700">(tú)</span>' : '';
-    const act = isMe ? 'backToHome()' : (idx>=0 ? 'viewProfileIdx('+idx+')' : "showToast('Este miembro aún no ha creado su equipo')");
-    const btn = isMe ? 'Inicio' : 'Ver';
+    const owner = (m && m.isOwner) ? ' <span style="color:#CC0000;font-size:11px;font-weight:700">'+tr('comm_admin_tag','(admin com.)')+'</span>' : '';
+    const meTag = isMe ? ' <span style="color:#2e7d32;font-size:11px;font-weight:700">'+tr('comm_you_tag','(tú)')+'</span>' : '';
+    const act = isMe ? 'backToHome()' : (idx>=0 ? 'viewProfileIdx('+idx+')' : "showToast('"+tr('comm_no_team_yet','Este miembro aún no ha creado su equipo')+"')");
+    const btn = isMe ? tr('comm_home_btn','Inicio') : tr('comm_view_btn','Ver');
     const iAmOwner = ST.currentCommunity && (ST.currentCommunity.ownerId===ST.globalUserId || isAdminUser(ST.globalUserId));
-    const kickBtn = (iAmOwner && !isMe && !(m&&m.isOwner)) ? '<button class="del-btn" title="Expulsar" onclick="event.stopPropagation();kickMember(\''+uid.replace(/'/g,"\\'")+'\')">👢</button>' : '';
-    const delegateBtn = (iAmOwner && !isMe) ? '<button class="view-btn" style="background:#6a1b9a!important" title="Hacer administrador" onclick="event.stopPropagation();delegateAdmin(\''+uid.replace(/'/g,"\\'")+'\')">🔑</button>' : '';
+    const kickBtn = (iAmOwner && !isMe && !(m&&m.isOwner)) ? '<button class="del-btn" title="'+tr('comm_kick_title','Expulsar')+'" onclick="event.stopPropagation();kickMember(\''+uid.replace(/'/g,"\\'")+'\')">👢</button>' : '';
+    const delegateBtn = (iAmOwner && !isMe) ? '<button class="view-btn" style="background:#6a1b9a!important" title="'+tr('comm_delegate_title','Hacer administrador')+'" onclick="event.stopPropagation();delegateAdmin(\''+uid.replace(/'/g,"\\'")+'\')">🔑</button>' : '';
     const _ua=(alias||uid).replace(/'/g,"\\'");
-    const dmBtn = !isMe ? '<button class="view-btn" style="background:#00838f!important" title="Mensaje privado" onclick="event.stopPropagation();openDM(\''+uid.replace(/'/g,"\\'")+'\',\''+_ua+'\')">✉️</button>' : '';
-    return '<div class="profile-row"><div class="avatar">'+ini+'</div><div class="profile-info" onclick="'+act+'"><div class="profile-name">'+alias+meTag+owner+'</div><div class="profile-stat">'+oc.owned+'/'+oc.total+' Pokémon deseados</div></div><div class="profile-actions"><button class="view-btn" onclick="'+act+'">'+btn+'</button>'+dmBtn+delegateBtn+kickBtn+'</div></div>';
+    const dmBtn = !isMe ? '<button class="view-btn" style="background:#00838f!important" title="'+tr('comm_dm_title','Mensaje privado')+'" onclick="event.stopPropagation();openDM(\''+uid.replace(/'/g,"\\'")+'\',\''+_ua+'\')">✉️</button>' : '';
+    return '<div class="profile-row"><div class="avatar">'+ini+'</div><div class="profile-info" onclick="'+act+'"><div class="profile-name">'+alias+meTag+owner+'</div><div class="profile-stat">'+oc.owned+'/'+oc.total+' '+tr('comm_desired_pokemon','Pokémon deseados')+'</div></div><div class="profile-actions"><button class="view-btn" onclick="'+act+'">'+btn+'</button>'+dmBtn+delegateBtn+kickBtn+'</div></div>';
   }).join('');
 }
 
 
 // Modo oscuro desactivado temporalmente — no se aplica aunque estuviera guardado
-try{ document.body.classList.remove('dark'); }catch(e){}
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('sw.js').then(reg=>{
