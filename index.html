@@ -419,7 +419,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
       <button class="auth-btn" onclick="doGlobalLogin()" data-i18n="enter">Entrar</button>
       <p style="text-align:center;font-size:13px;color:#666;margin-top:14px"><span data-i18n="no_account">¿No tienes cuenta?</span> <a href="#" onclick="showGlobalRegister();return false" style="color:#CC0000;font-weight:700" data-i18n="create_account">Crear cuenta</a></p>
     </div>
-    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.o</p>
+    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.q</p>
   </div>
 </div>
 
@@ -559,7 +559,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
           </button>
         </div>
         <button class="home-btn-small" onclick="openNovedades()" style="background:#ede7f6;border-color:#5e35b1;color:#4527a0">
-          <span data-i18n="news">🆕 Novedades</span> · v0.985.o
+          <span data-i18n="news">🆕 Novedades</span> · v0.985.q
         </button>
       </div>
 
@@ -1388,10 +1388,24 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
     <h1 data-i18n="news">🆕 Novedades</h1>
   </div>
   <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:24px">
-    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.o</b></p>
+    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.q</b></p>
 
     <div class="nov-version nov-item-current">
-      <div class="nov-version-head"><span class="nov-version-num">v0.985.o · actual</span><span class="nov-version-tag">Retratos de recluta + fix de IVs</span></div>
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.q · actual</span><span class="nov-version-tag">Retratos de recluta reales</span></div>
+      <div class="nov-list">
+        <div class="nov-item"><span>🖼️</span><span>Añadidos los retratos reales de los reclutas (male-grunt.webp / female-grunt.webp) junto a su frase, sustituyendo al icono ♂/♀ dibujado a mano (que sigue de respaldo automático si algún día faltan los ficheros).</span></div>
+      </div>
+    </div>
+
+    <div class="nov-version">
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.p</span><span class="nov-version-tag">Rocket Rewards: cruce por familia evolutiva</span></div>
+      <div class="nov-list">
+        <div class="nov-item"><span>🐛</span><span>Corregido: muchas recompensas de Rocket (Axew, Litwick, Teddiursa...) son primeras evoluciones que casi nadie sigue con ese nombre exacto en su Tracker de IVs — lo normal es seguir la forma evolucionada (Haxorus, Chandelure...). Ahora el cruce de "Obtenido"/IVs se hace por toda la familia evolutiva: si tienes un Haxorus (Shadow) en tus equipos, cuenta como que sigues a Axew.</span></div>
+      </div>
+    </div>
+
+    <div class="nov-version">
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.o</span><span class="nov-version-tag">Retratos de recluta + fix de IVs</span></div>
       <div class="nov-list">
         <div class="nov-item"><span>🐛</span><span>Corregido: los Pokémon marcados como "Obtenido" no mostraban sus IVs porque el nombre guardado tiene el formato "X (Shadow)" y la comparación no lo tenía en cuenta. Ya detecta ese formato (y también "Shadow X") correctamente.</span></div>
         <div class="nov-item"><span>🖼️</span><span>El icono de género junto a la frase ahora usa el retrato real del recluta hombre/mujer en vez del icono ♂/♀ dibujado a mano (que queda como respaldo automático si el retrato no está disponible).</span></div>
@@ -5929,21 +5943,120 @@ function rrSlotChances(slots){
   populated.forEach((grp,idx)=>{ out[grp.i] = (totals[idx]||0)/grp.opts.length; });
   return out;
 }
+// ── Familias evolutivas de las especies de recompensa (para el cruce con "Tracker IVs") ──
+// Muchas recompensas son primeras evoluciones (Axew, Litwick...) que nadie sigue en su
+// Tracker de IVs porque lo que realmente se usa es la forma evolucionada (Haxorus,
+// Chandelure...). Por eso el cruce de "obtenido" debe hacerse por FAMILIA evolutiva
+// completa, no por nombre exacto: si tienes un Haxorus (Shadow) en tus equipos, eso cuenta
+// como tener la familia de Axew. Cada sub-array es una familia; el primer elemento actúa
+// de "raíz" identificadora de esa familia.
+const RR_EVO_FAMILIES = [
+  ['teddiursa','ursaring','ursaluna'],
+  ['hoothoot','noctowl'],
+  ['porygon','porygon2','porygonz'],
+  ['whismur','loudred','exploud'],
+  ['stufful','bewear'],
+  ['starly','staravia','staraptor'],
+  ['litwick','lampent','chandelure'],
+  ['ponyta','rapidash'],
+  ['torchic','combusken','blaziken'],
+  ['mudkip','marshtomp','swampert'],
+  ['tentacool','tentacruel'],
+  ['krabby','kingler'],
+  ['magikarp','gyarados'],
+  ['feebas','milotic'],
+  ['voltorb','electrode'],
+  ['shinx','luxio','luxray'],
+  ['helioptile','heliolisk'],
+  ['elekid','electabuzz','electivire'],
+  ['geodude','alolangeodude','graveler','alolangraveler','golem','alolangolem'],
+  ['phantump','trevenant'],
+  ['treecko','grovyle','sceptile'],
+  ['tangela','tangrowth'],
+  ['seel','dewgong'],
+  ['spheal','sealeo','walrein'],
+  ['timburr','gurdurr','conkeldurr'],
+  ['mankey','primeape','annihilape'],
+  ['machop','machoke','machamp'],
+  ['tyrogue','hitmontop'],
+  ['tyrogue2','hitmonlee'],
+  ['tyrogue3','hitmonchan'],
+  ['oddish','gloom','vileplume','bellossom'],
+  ['zubat','golbat','crobat'],
+  ['koffing','weezing','galarianweezing'],
+  ['nidoranf','nidorina','nidoqueen'],
+  ['nidoranm','nidorino','nidoking'],
+  ['rhyhorn','rhydon','rhyperior'],
+  ['gligar','gliscor'],
+  ['trapinch','vibrava','flygon'],
+  ['baltoy','claydol'],
+  ['taillow','swellow'],
+  ['rookidee','corvisquire','corviknight'],
+  ['swablu','altaria'],
+  ['scyther','scizor'],
+  ['wynaut','wobbuffet'],
+  ['ralts','kirlia','gardevoir','gallade'],
+  ['drowzee','hypno'],
+  ['solosis','duosion','reuniclus'],
+  ['venonat','venomoth'],
+  ['weedle','kakuna','beedrill'],
+  ['grubbin','charjabug','vikavolt'],
+  ['anorith','armaldo'],
+  ['dewpider','araquanid'],
+  ['onix','steelix'],
+  ['kabuto','kabutops'],
+  ['cranidos','rampardos'],
+  ['shieldon','bastiodon'],
+  ['duskull','dusclops','dusknoir'],
+  ['gastly','haunter','gengar'],
+  ['yamask','cofagrigus','runerigus'],
+  ['noibat','noivern'],
+  ['deino','zweilous','hydreigon'],
+  ['dratini','dragonair','dragonite'],
+  ['carvanha','sharpedo'],
+  ['poochyena','mightyena'],
+  ['rattata','alolanrattata','raticate','alolanraticate'],
+  ['sneasel','weavile'],
+  ['houndour','houndoom'],
+  ['sandshrew','alolansandshrew','sandslash','alolansandslash'],
+  ['aron','lairon','aggron'],
+  ['beldum','metang','metagross'],
+  ['snubbull','granbull'],
+  ['vulpix','alolanvulpix','ninetales','alolanninetales'],
+  ['bulbasaur','ivysaur','venusaur'],
+  ['charmander','charmeleon','charizard'],
+  ['squirtle','wartortle','blastoise'],
+  ['bellsprout','weepinbell','victreebel'],
+  ['axew','fraxure','haxorus'],
+  ['tyrunt','tyrantrum'],
+  ['amaura','aurorus'],
+];
+const RR_FAMILY_ROOT = {};
+RR_EVO_FAMILIES.forEach(fam=>{ fam.forEach(m=>{ RR_FAMILY_ROOT[m]=fam[0]; }); });
+// Normaliza un nombre y lo resuelve a su "raíz" de familia evolutiva si se conoce;
+// si no está en el mapa (especies sin evolución conocida, tipo Snorlax o Lapras),
+// se usa el propio nombre normalizado como raíz (equivale a comparar por nombre exacto).
+function rrFamilyKey(name){
+  const norm=(name||'').toLowerCase().replace(/^(alolan|galarian|hisuian|paldean)\s+/,(m)=>m.replace(/\s+/,'')).replace(/[^a-z0-9]/g,'');
+  return RR_FAMILY_ROOT[norm] || norm;
+}
 // ── Cruce con "Tracker IVs": ¿ya tienes este Pokémon Oscuro y con qué IVs? ───
-// Devuelve null si esa especie ni siquiera está en tus equipos (no la sigues, "no sirve"
-// para este propósito). Si SÍ está en tus equipos, devuelve {tracked:true, owned, ...}:
-// owned=false → aún no lo has capturado (esto es lo único que cuenta como "No obtenido").
-// owned=true → lo tienes; hasIVs indica si ya le asignaste IVs (mismo criterio que Tracker
-// IVs: suma de IVs > 0, si no se considera "sin IVs asignados").
+// Devuelve null si esa especie (o su familia evolutiva) ni siquiera está en tus equipos
+// (no la sigues, "no sirve" para este propósito). Si SÍ está en tus equipos, devuelve
+// {tracked:true, owned, ...}: owned=false → aún no lo has capturado (lo único que cuenta
+// como "No obtenido"). owned=true → lo tienes; hasIVs indica si ya le asignaste IVs (mismo
+// criterio que Tracker IVs: suma de IVs > 0, si no se considera "sin IVs asignados").
+// El cruce se hace por FAMILIA evolutiva completa: si sigues a Haxorus, cuenta como que
+// sigues a Axew (misma familia), aunque el nombre exacto no coincida.
 function rrOwnedInfo(p, name){
   if(!p||!p.album) return null;
-  const target = (name||'').toLowerCase().replace(/^(alolan|galarian|hisuian|paldean)\s+/,'').replace(/[^a-z0-9]/g,'');
+  const target = rrFamilyKey(name);
   let best=null;
   for(const id in p.album){
     if(p.album[id]!==true) continue;
     if(!isShadowEntry(id,p)) continue;
-    const raw=(getPkName(id,p)||'').toLowerCase().replace(/\s*\(shadow\)/,'').replace(/^shadow\s+/,'').replace(/^(alolan|galarian|hisuian|paldean)\s+/,'').replace(/[^a-z0-9]/g,'');
-    if(raw!==target) continue;
+    const raw=(getPkName(id,p)||'').replace(/\s*\(shadow\)/i,'').replace(/^shadow\s+/i,'');
+    if(rrFamilyKey(raw)!==target) continue;
     const pk=(p.pk&&p.pk[id])||{};
     const owned=!!pk.owned;
     const ivAtk=pk.ivAtk||0, ivDef=pk.ivDef||0, ivHp=pk.ivHp||0;
@@ -6033,7 +6146,7 @@ function switchRocketTab(tab){
 }
 // El sexo de quien habla importa (la frase es de ese recluta/líder concreto), así que
 // mostramos el retrato oficial del recluta hombre/mujer junto a la frase. Los ficheros
-// grunt-male.png / grunt-female.png van en la raíz del proyecto (junto a icon-192.png).
+// male-grunt.webp / female-grunt.webp van en la raíz del proyecto (junto a icon-192.png).
 // Si por lo que sea faltan esos ficheros, se cae automáticamente a un icono ♂/♀ propio
 // para que la pantalla nunca se quede rota.
 function rrGender(c){
@@ -6054,7 +6167,7 @@ function rrGenderIcon(g){
   const isF = g==='f';
   const color = isF ? '#ad1457' : '#1565c0';
   const bg = isF ? '#fce4ec' : '#e3f2fd';
-  const src = isF ? 'grunt-female.png' : 'grunt-male.png';
+  const src = isF ? 'female-grunt.webp' : 'male-grunt.webp';
   return `<div title="${isF?'Recluta mujer':'Recluta hombre'}" style="width:34px;height:34px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid ${color};overflow:hidden">
     <img src="${src}" alt="" style="width:100%;height:100%;object-fit:cover" onerror="rrGenderIconError(this,${isF})">
   </div>`;

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'trackdex-v174';
+const CACHE_NAME = 'trackdex-v176';
 const ASSETS = [
   '/',
   '/index.html',
@@ -6,6 +6,8 @@ const ASSETS = [
   '/icon-192.png',
   '/icon-512.png',
   '/shadow_icon.png',
+  '/male-grunt.webp',
+  '/female-grunt.webp',
   '/src/styles/styles.css',
   // JS modules - let them be fetched fresh, not cached by SW
 ];
