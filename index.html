@@ -419,7 +419,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
       <button class="auth-btn" onclick="doGlobalLogin()" data-i18n="enter">Entrar</button>
       <p style="text-align:center;font-size:13px;color:#666;margin-top:14px"><span data-i18n="no_account">¿No tienes cuenta?</span> <a href="#" onclick="showGlobalRegister();return false" style="color:#CC0000;font-weight:700" data-i18n="create_account">Crear cuenta</a></p>
     </div>
-    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.m</p>
+    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.n</p>
   </div>
 </div>
 
@@ -559,7 +559,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
           </button>
         </div>
         <button class="home-btn-small" onclick="openNovedades()" style="background:#ede7f6;border-color:#5e35b1;color:#4527a0">
-          <span data-i18n="news">🆕 Novedades</span> · v0.985.m
+          <span data-i18n="news">🆕 Novedades</span> · v0.985.n
         </button>
       </div>
 
@@ -1388,10 +1388,19 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
     <h1 data-i18n="news">🆕 Novedades</h1>
   </div>
   <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:24px">
-    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.m</b></p>
+    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.n</b></p>
 
     <div class="nov-version nov-item-current">
-      <div class="nov-version-head"><span class="nov-version-num">v0.985.m · actual</span><span class="nov-version-tag">Rocket Rewards mejorado</span></div>
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.n · actual</span><span class="nov-version-tag">Rocket Rewards: ajustes finos</span></div>
+      <div class="nov-list">
+        <div class="nov-item"><span>🚫</span><span>Quitadas del todo las debilidades de tipo (ni porcentajes ni nombres de tipo): no aportaban nada a esta pantalla.</span></div>
+        <div class="nov-item"><span>🎯</span><span>Corregido el criterio de "No obtenido": ahora solo se marca así un Pokémon si de verdad está en alguno de tus equipos (lo sigues) y todavía no lo tienes. Si ya lo tienes, pone "Obtenido" y sus IVs (o "Sin IVs asignados" si no los has puesto). Las especies que no sigues no muestran ninguna etiqueta ni cuentan para el orden — muchas de las opciones de cada recluta no interesan y ya no distraen.</span></div>
+        <div class="nov-item"><span>🧑‍🤝‍🧑</span><span>Añadido un icono de género junto a la frase de cada recluta/líder, ya que quién la dice (hombre o mujer) es parte de cómo se identifica en el juego.</span></div>
+      </div>
+    </div>
+
+    <div class="nov-version">
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.m</span><span class="nov-version-tag">Rocket Rewards mejorado</span></div>
       <div class="nov-list">
         <div class="nov-item"><span>👤</span><span>Rocket Rewards: la pestaña de Reclutas se abre primero (son los que más se usan). Quitados los porcentajes de debilidad "160%" que no aportaban nada; se mantienen los tipos.</span></div>
         <div class="nov-item"><span>🖼️</span><span>Añadida la imagen de cada Pokémon Oscuro que puedes conseguir: tócala para ampliarla y ver su cadena evolutiva, igual que en el resto de la app.</span></div>
@@ -5879,13 +5888,9 @@ function confirmDeleteDmaxTeam() {
 }
 
 // ── ROCKET REWARDS ────────────────────────────────────────────────────────
-const RR_TYPE_ES = {Normal:'Normal',Fire:'Fuego',Water:'Agua',Grass:'Planta',Electric:'Eléctrico',Ice:'Hielo',Fighting:'Lucha',Poison:'Veneno',Ground:'Tierra',Flying:'Volador',Psychic:'Psíquico',Bug:'Bicho',Rock:'Roca',Ghost:'Fantasma',Dragon:'Dragón',Dark:'Siniestro',Steel:'Acero',Fairy:'Hada'};
-function rrW(str){
-  // "Ground160" -> "Tierra" (el número de porcentaje no se muestra, no aporta nada al usuario)
-  const m = str.match(/^([A-Za-z]+)(\d+)$/);
-  if(!m) return str;
-  return RR_TYPE_ES[m[1]]||m[1];
-}
+// Nota: las debilidades de tipo (con o sin porcentaje) NO se muestran en esta pantalla,
+// por petición explícita — no aportaban valor. Los datos de "w" siguen en RR_DATA por si
+// se quieren reutilizar en el futuro, pero rrCardHtml ya no los pinta.
 // Dex ids que faltan en NAME_TO_ID (no forman parte de los rankings normales de la app)
 const RR_EXTRA_IDS = {nidorina:'30', nidorino:'33', drowzee:'96', claydol:'344', duosion:'573',
   loudred:'295', seel:'86', delibird:'225', gligar:'207', taillow:'276', shieldon:'410',
@@ -5917,6 +5922,11 @@ function rrSlotChances(slots){
   return out;
 }
 // ── Cruce con "Tracker IVs": ¿ya tienes este Pokémon Oscuro y con qué IVs? ───
+// Devuelve null si esa especie ni siquiera está en tus equipos (no la sigues, "no sirve"
+// para este propósito). Si SÍ está en tus equipos, devuelve {tracked:true, owned, ...}:
+// owned=false → aún no lo has capturado (esto es lo único que cuenta como "No obtenido").
+// owned=true → lo tienes; hasIVs indica si ya le asignaste IVs (mismo criterio que Tracker
+// IVs: suma de IVs > 0, si no se considera "sin IVs asignados").
 function rrOwnedInfo(p, name){
   if(!p||!p.album) return null;
   const target = (name||'').toLowerCase().replace(/^(alolan|galarian|hisuian|paldean)\s+/,'').replace(/[^a-z0-9]/g,'');
@@ -5927,9 +5937,12 @@ function rrOwnedInfo(p, name){
     const raw=(getPkName(id,p)||'').toLowerCase().replace(/^shadow\s+/,'').replace(/^(alolan|galarian|hisuian|paldean)\s+/,'').replace(/[^a-z0-9]/g,'');
     if(raw!==target) continue;
     const pk=(p.pk&&p.pk[id])||{};
-    const score=ivScoreOf(p,id);
     const owned=!!pk.owned;
-    if(!best || (owned&&!best.owned) || (owned===best.owned && score>best.score)) best={owned,score,ivAtk:pk.ivAtk||0,ivDef:pk.ivDef||0,ivHp:pk.ivHp||0};
+    const ivAtk=pk.ivAtk||0, ivDef=pk.ivDef||0, ivHp=pk.ivHp||0;
+    const hasIVs=(ivAtk+ivDef+ivHp)>0;
+    const score=ivScoreOf(p,id);
+    const cand={tracked:true, owned, hasIVs, ivAtk, ivDef, ivHp, score};
+    if(!best || (cand.owned&&!best.owned) || (cand.owned===best.owned && cand.score>best.score)) best=cand;
   }
   return best;
 }
@@ -5938,18 +5951,23 @@ function rrAllNames(c){
   c.s.forEach(opts=>opts.forEach(m=>{ if(!out.includes(m.n)) out.push(m.n); }));
   return out;
 }
-// Orden de prioridad pedido: 1º los que tengan algún Pokémon aún no obtenido,
-// 2º (entre los que ya tienes todos) los de peor IV actual (más margen de mejora).
+// Orden de prioridad pedido: 1º los que tengan algún Pokémon Oscuro QUE SIGUES (está en
+// tus equipos) y AÚN NO has obtenido; 2º entre los que ya tienes todos los que sigues,
+// los de peor IV actual (más margen de mejora). Las especies que ni siquiera están en
+// tus equipos ("muchos de estos no sirven") no cuentan para nada y el recluta se manda
+// al final si no tiene ninguna especie que sigas.
 function rrPriorityScore(c, p){
   const names = rrAllNames(c);
   let missing=0, sum=0, count=0;
   names.forEach(n=>{
     const info = rrOwnedInfo(p, n);
-    if(!info || !info.owned) missing++;
+    if(!info) return; // ni siquiera la sigues: ignorar, no cuenta como "no obtenido"
+    if(!info.owned) missing++;
     else { sum+=info.score; count++; }
   });
   if(missing>0) return -1000000 - missing*1000;
-  return count ? sum/count : 0;
+  if(count>0) return sum/count;
+  return 10000000; // no sigues ninguna especie de este recluta: al final
 }
 const RR_DATA = {
   leaders: [
@@ -6005,6 +6023,28 @@ function switchRocketTab(tab){
   document.getElementById('rr-tab-grunts').classList.toggle('active', tab==='grunts');
   renderRocketRewards();
 }
+// El sexo de quien habla importa (la frase es de ese recluta/líder concreto), así que
+// mostramos un icono junto a la frase indicando si es hombre o mujer. No usamos una foto
+// real del personaje (Niantic/LeekDuck no ofrecen esos sprites de forma estable para
+// hotlink), sino un icono propio dibujado en SVG, coherente con el resto de iconos de la app.
+function rrGender(c){
+  if(/♀/.test(c.n)) return 'f';
+  if(/♂/.test(c.n)) return 'm';
+  if(c.n==='Sierra') return 'f';
+  if(c.n==='Giovanni'||c.n==='Cliff'||c.n==='Arlo') return 'm';
+  return null;
+}
+function rrGenderIcon(g){
+  if(!g) return '';
+  const isF = g==='f';
+  const color = isF ? '#ad1457' : '#1565c0';
+  const bg = isF ? '#fce4ec' : '#e3f2fd';
+  const symbol = isF ? '♀' : '♂';
+  return `<div title="${isF?'Recluta mujer':'Recluta hombre'}" style="width:34px;height:34px;border-radius:50%;background:${bg};display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid ${color}">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+    <span style="position:relative;left:-2px;top:8px;font-size:11px;font-weight:900;color:${color}">${symbol}</span>
+  </div>`;
+}
 function rrCardHtml(c, pinned){
   const p = gp(ST.cur);
   const chances = rrSlotChances(c.s);
@@ -6013,15 +6053,23 @@ function rrCardHtml(c, pinned){
     const pct = chances[i];
     const pctTxt = pct>=1 ? Math.round(pct)+'%' : (Math.round(pct*10)/10)+'%';
     const monsHtml = opts.map(m => {
+      // Solo mostramos etiqueta de estado si esta especie está en tus equipos (la sigues).
+      // Si no está en ningún equipo no se muestra nada: no es "no obtenido", simplemente
+      // no es algo que estés buscando con esta pantalla.
       const info = p ? rrOwnedInfo(p, m.n) : null;
-      const ownedTag = info && info.owned
-        ? `<span style="font-size:9px;font-weight:700;color:#2e7d32;background:#e8f5e9;border-radius:5px;padding:1px 5px">✅ ${info.ivAtk}/${info.ivDef}/${info.ivHp}</span>`
-        : `<span style="font-size:9px;font-weight:700;color:#e65100;background:#fff3e0;border-radius:5px;padding:1px 5px">🆕 No obtenido</span>`;
+      let tag = '';
+      if (info && !info.owned) {
+        tag = `<span style="font-size:9px;font-weight:700;color:#e65100;background:#fff3e0;border-radius:5px;padding:1px 5px">🆕 No obtenido</span>`;
+      } else if (info && info.owned) {
+        tag = info.hasIVs
+          ? `<span style="font-size:9px;font-weight:700;color:#2e7d32;background:#e8f5e9;border-radius:5px;padding:1px 5px">✅ Obtenido · ${info.ivAtk}/${info.ivDef}/${info.ivHp}</span>`
+          : `<span style="font-size:9px;font-weight:700;color:#2e7d32;background:#e8f5e9;border-radius:5px;padding:1px 5px">✅ Obtenido · Sin IVs asignados</span>`;
+      }
       return `<div style="display:flex;gap:8px;align-items:center;background:#f5f5f5;border-radius:8px;padding:6px 8px;flex:1;min-width:170px">
         ${rrImgTag(m.n)}
         <div style="min-width:0;flex:1">
           <div style="font-size:12px;font-weight:800;color:#333;display:flex;align-items:center;flex-wrap:wrap;gap:4px">🌑 ${m.n} <span style="font-size:9.5px;font-weight:700;color:#1565c0;background:#e3f2fd;border-radius:5px;padding:1px 5px">${pctTxt}</span></div>
-          <div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:3px">${m.w.map(w=>`<span style="font-size:9.5px;font-weight:700;color:#c62828;background:#ffebee;border-radius:5px;padding:1px 5px">${rrW(w)}</span>`).join('')}${ownedTag}</div>
+          ${tag?`<div style="margin-top:3px">${tag}</div>`:''}
         </div>
       </div>`;
     }).join('');
@@ -6032,13 +6080,17 @@ function rrCardHtml(c, pinned){
   }).join('');
   const _key=(c.n||'').replace(/'/g,"\\'");
   const pinBtn = `<button onclick="event.stopPropagation();rrTogglePin('${_key}')" title="Fijar" style="background:none;border:none;cursor:pointer;font-size:16px;line-height:1;padding:2px 4px;opacity:${pinned?1:.35}">📌</button>`;
+  const genderIcon = rrGenderIcon(rrGender(c));
   return `<div style="background:#fff;border:1.5px solid ${pinned?'#ff9800':'#e0e0e0'};border-radius:12px;padding:12px;margin-bottom:10px">
     <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px">
       <div style="font-size:14px;font-weight:800;color:#212121">${c.n}</div>
       ${pinBtn}
     </div>
     ${c.r?`<div style="font-size:11px;font-weight:700;color:#607d8b;margin-bottom:6px">${c.r}</div>`:''}
-    <div style="font-size:12.5px;font-style:italic;color:#555;margin:4px 0 10px">"${c.q}"${c.approx?' <span style="font-size:10px;color:#e65100;font-style:normal;font-weight:700">(traducción aproximada, no confirmada)</span>':''}</div>
+    <div style="display:flex;align-items:center;gap:8px;margin:4px 0 10px">
+      ${genderIcon}
+      <div style="font-size:12.5px;font-style:italic;color:#555;flex:1">"${c.q}"${c.approx?' <span style="font-size:10px;color:#e65100;font-style:normal;font-weight:700">(traducción aproximada, no confirmada)</span>':''}</div>
+    </div>
     ${slotsHtml || '<div style="font-size:11px;color:#aaa">Sin datos de lineup confirmados</div>'}
   </div>`;
 }
