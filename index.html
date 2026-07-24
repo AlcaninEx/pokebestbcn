@@ -419,7 +419,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
       <button class="auth-btn" onclick="doGlobalLogin()" data-i18n="enter">Entrar</button>
       <p style="text-align:center;font-size:13px;color:#666;margin-top:14px"><span data-i18n="no_account">¿No tienes cuenta?</span> <a href="#" onclick="showGlobalRegister();return false" style="color:#CC0000;font-weight:700" data-i18n="create_account">Crear cuenta</a></p>
     </div>
-    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.l</p>
+    <p id="login-version" style="text-align:center;font-size:11px;color:#bbb;margin-top:16px">TrackDex v0.985.m</p>
   </div>
 </div>
 
@@ -559,7 +559,7 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
           </button>
         </div>
         <button class="home-btn-small" onclick="openNovedades()" style="background:#ede7f6;border-color:#5e35b1;color:#4527a0">
-          <span data-i18n="news">🆕 Novedades</span> · v0.985.l
+          <span data-i18n="news">🆕 Novedades</span> · v0.985.m
         </button>
       </div>
 
@@ -1261,8 +1261,8 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
   <p style="text-align:center;font-size:10.5px;color:#888;padding:10px 14px 0" data-i18n="rocket_rewards_desc">Miembros del Team GO Rocket, sus frases y los Pokémon Oscuros que puedes conseguir al derrotarlos.</p>
   <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 14px 24px">
     <div class="tabs" style="position:static;margin-bottom:10px">
-      <button class="tab active" id="rr-tab-leaders" onclick="switchRocketTab('leaders')" data-i18n="rr_tab_leaders">👑 Jefe y Líderes</button>
-      <button class="tab" id="rr-tab-grunts" onclick="switchRocketTab('grunts')" data-i18n="rr_tab_grunts">👤 Reclutas</button>
+      <button class="tab active" id="rr-tab-grunts" onclick="switchRocketTab('grunts')" data-i18n="rr_tab_grunts">👤 Reclutas</button>
+      <button class="tab" id="rr-tab-leaders" onclick="switchRocketTab('leaders')" data-i18n="rr_tab_leaders">👑 Jefe y Líderes</button>
     </div>
     <div id="rr-list"></div>
   </div>
@@ -1388,10 +1388,21 @@ body.dark .btn-admin-del{background:#1e1e1e;color:#aaa;border-color:#444}
     <h1 data-i18n="news">🆕 Novedades</h1>
   </div>
   <div style="overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:24px">
-    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.l</b></p>
+    <p style="text-align:center;font-size:12px;color:#888;padding:12px 14px 0"><span data-i18n="news_current_version">Versión actual:</span> <b style="color:#5e35b1">v0.985.m</b></p>
 
     <div class="nov-version nov-item-current">
-      <div class="nov-version-head"><span class="nov-version-num">v0.985.l · actual</span><span class="nov-version-tag">Abandonar comunidad</span></div>
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.m · actual</span><span class="nov-version-tag">Rocket Rewards mejorado</span></div>
+      <div class="nov-list">
+        <div class="nov-item"><span>👤</span><span>Rocket Rewards: la pestaña de Reclutas se abre primero (son los que más se usan). Quitados los porcentajes de debilidad "160%" que no aportaban nada; se mantienen los tipos.</span></div>
+        <div class="nov-item"><span>🖼️</span><span>Añadida la imagen de cada Pokémon Oscuro que puedes conseguir: tócala para ampliarla y ver su cadena evolutiva, igual que en el resto de la app.</span></div>
+        <div class="nov-item"><span>🎲</span><span>Cada Pokémon muestra ahora su probabilidad estimada de ser el que consigas: el primer grupo revelado tiene ~90% de posibilidades (repartido entre sus alternativas) y el segundo ~10%, según datos de la comunidad (Silph Road / PokémonGOHub).</span></div>
+        <div class="nov-item"><span>📌</span><span>Ya puedes fijar tus reclutas favoritos (📌 en cada ficha) para que aparezcan siempre arriba.</span></div>
+        <div class="nov-item"><span>🎯</span><span>Los reclutas no fijados se ordenan solos usando tu Tracker IVs: primero los que tengan algún Pokémon Oscuro que aún no tienes, después los que ya tienes todos pero con peor IV (más margen de mejora).</span></div>
+      </div>
+    </div>
+
+    <div class="nov-version">
+      <div class="nov-version-head"><span class="nov-version-num">v0.985.l</span><span class="nov-version-tag">Abandonar comunidad</span></div>
       <div class="nov-list">
         <div class="nov-item"><span>🚪</span><span>Cualquier miembro puede abandonar una comunidad voluntariamente desde la pantalla Comunidad (botón "🚪 Abandonar esta comunidad"). Tus Pokémon no se borran, quedan en tu cuenta.</span></div>
         <div class="nov-item"><span>ℹ️</span><span>Si eres el administrador y hay más miembros, se te pide delegar el puesto primero (🔑 en Miembros). Si eres el único miembro, abandonar borra la comunidad entera.</span></div>
@@ -5870,10 +5881,75 @@ function confirmDeleteDmaxTeam() {
 // ── ROCKET REWARDS ────────────────────────────────────────────────────────
 const RR_TYPE_ES = {Normal:'Normal',Fire:'Fuego',Water:'Agua',Grass:'Planta',Electric:'Eléctrico',Ice:'Hielo',Fighting:'Lucha',Poison:'Veneno',Ground:'Tierra',Flying:'Volador',Psychic:'Psíquico',Bug:'Bicho',Rock:'Roca',Ghost:'Fantasma',Dragon:'Dragón',Dark:'Siniestro',Steel:'Acero',Fairy:'Hada'};
 function rrW(str){
-  // "Ground160" -> "Tierra 160%"
+  // "Ground160" -> "Tierra" (el número de porcentaje no se muestra, no aporta nada al usuario)
   const m = str.match(/^([A-Za-z]+)(\d+)$/);
   if(!m) return str;
-  return (RR_TYPE_ES[m[1]]||m[1])+' '+m[2]+'%';
+  return RR_TYPE_ES[m[1]]||m[1];
+}
+// Dex ids que faltan en NAME_TO_ID (no forman parte de los rankings normales de la app)
+const RR_EXTRA_IDS = {nidorina:'30', nidorino:'33', drowzee:'96', claydol:'344', duosion:'573',
+  loudred:'295', seel:'86', delibird:'225', gligar:'207', taillow:'276', shieldon:'410',
+  graveler:'75', carvanha:'318', poochyena:'261', kirlia:'281'};
+function rrDexId(name){
+  const key=(name||'').toLowerCase().trim();
+  const hyphenKey = /^(alolan|galarian|hisuian|paldean)\s+/.test(key) ? key.replace(/\s+/g,'-') : key;
+  const baseKey = key.replace(/^(alolan|galarian|hisuian|paldean)\s+/,'');
+  // Para formas regionales sin ficha propia en NAME_TO_ID (p.ej. Alolan Vulpix), se muestra
+  // el arte de la forma base: es mejor que no mostrar nada, aunque no sea 100% exacto.
+  return NAME_TO_ID[hyphenKey] || NAME_TO_ID[key] || NAME_TO_ID[baseKey] || RR_EXTRA_IDS[baseKey] || null;
+}
+function rrImgTag(name){
+  const id = rrDexId(name);
+  const src = id ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png` : '';
+  return `<img src="${src}" alt="${name}" style="width:38px;height:38px;object-fit:contain;flex-shrink:0;cursor:pointer;background:#fff;border-radius:6px" onerror="this.style.opacity=.12">`;
+}
+// Reparte la probabilidad de encuentro entre los "slots" revelados de un personaje.
+// Dato de la comunidad (Silph Road / PokémonGOHub): cuando hay dos slots con Pokémon
+// capturable, el primero tiene ~90% de que su Pokémon sea el del encuentro final y el
+// segundo ~10%. Si solo hay un slot revelado (líderes, Giovanni), ese sale al 100%.
+// Dentro de cada slot, la posibilidad se reparte a partes iguales entre sus Pokémon
+// alternativos (el juego elige uno al azar de esa lista para esa partida).
+function rrSlotChances(slots){
+  const populated = slots.map((opts,i)=>({i,opts})).filter(x=>x.opts.length);
+  const totals = populated.length<=1 ? [100] : [90,10];
+  const out = {};
+  populated.forEach((grp,idx)=>{ out[grp.i] = (totals[idx]||0)/grp.opts.length; });
+  return out;
+}
+// ── Cruce con "Tracker IVs": ¿ya tienes este Pokémon Oscuro y con qué IVs? ───
+function rrOwnedInfo(p, name){
+  if(!p||!p.album) return null;
+  const target = (name||'').toLowerCase().replace(/^(alolan|galarian|hisuian|paldean)\s+/,'').replace(/[^a-z0-9]/g,'');
+  let best=null;
+  for(const id in p.album){
+    if(p.album[id]!==true) continue;
+    if(!isShadowEntry(id,p)) continue;
+    const raw=(getPkName(id,p)||'').toLowerCase().replace(/^shadow\s+/,'').replace(/^(alolan|galarian|hisuian|paldean)\s+/,'').replace(/[^a-z0-9]/g,'');
+    if(raw!==target) continue;
+    const pk=(p.pk&&p.pk[id])||{};
+    const score=ivScoreOf(p,id);
+    const owned=!!pk.owned;
+    if(!best || (owned&&!best.owned) || (owned===best.owned && score>best.score)) best={owned,score,ivAtk:pk.ivAtk||0,ivDef:pk.ivDef||0,ivHp:pk.ivHp||0};
+  }
+  return best;
+}
+function rrAllNames(c){
+  const out=[];
+  c.s.forEach(opts=>opts.forEach(m=>{ if(!out.includes(m.n)) out.push(m.n); }));
+  return out;
+}
+// Orden de prioridad pedido: 1º los que tengan algún Pokémon aún no obtenido,
+// 2º (entre los que ya tienes todos) los de peor IV actual (más margen de mejora).
+function rrPriorityScore(c, p){
+  const names = rrAllNames(c);
+  let missing=0, sum=0, count=0;
+  names.forEach(n=>{
+    const info = rrOwnedInfo(p, n);
+    if(!info || !info.owned) missing++;
+    else { sum+=info.score; count++; }
+  });
+  if(missing>0) return -1000000 - missing*1000;
+  return count ? sum/count : 0;
 }
 const RR_DATA = {
   leaders: [
@@ -5907,27 +5983,60 @@ const RR_DATA = {
     {n:'Recluta ♀ señuelo', q:'Te la colé, novato.', approx:true, s:[[{n:'Bellsprout',w:['Fire160','Ice160','Flying160','Psychic160']}], [], []]},
   ]
 };
-let _rrTab = 'leaders';
+let _rrTab = 'grunts';
+let _rrPinned = {};
+function rrLoadPinned(){
+  const p = goc(ST.cur);
+  _rrPinned = p.rrPinned || {};
+}
+function rrSavePinned(){
+  const p = goc(ST.cur);
+  p.rrPinned = _rrPinned;
+  save();
+}
+function rrTogglePin(key){
+  _rrPinned[key] = !_rrPinned[key];
+  rrSavePinned();
+  renderRocketRewards();
+}
 function switchRocketTab(tab){
   _rrTab = tab;
   document.getElementById('rr-tab-leaders').classList.toggle('active', tab==='leaders');
   document.getElementById('rr-tab-grunts').classList.toggle('active', tab==='grunts');
   renderRocketRewards();
 }
-function rrCardHtml(c){
+function rrCardHtml(c, pinned){
+  const p = gp(ST.cur);
+  const chances = rrSlotChances(c.s);
   const slotsHtml = c.s.map((opts, i) => {
     if(!opts.length) return '';
-    const monsHtml = opts.map(m => `<div style="display:flex;flex-direction:column;gap:2px;background:#f5f5f5;border-radius:8px;padding:6px 8px;flex:1;min-width:110px">
-        <div style="font-size:12px;font-weight:800;color:#333">🌑 ${m.n}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:3px">${m.w.map(w=>`<span style="font-size:9.5px;font-weight:700;color:#c62828;background:#ffebee;border-radius:5px;padding:1px 5px">${rrW(w)}</span>`).join('')}</div>
-      </div>`).join('');
+    const pct = chances[i];
+    const pctTxt = pct>=1 ? Math.round(pct)+'%' : (Math.round(pct*10)/10)+'%';
+    const monsHtml = opts.map(m => {
+      const info = p ? rrOwnedInfo(p, m.n) : null;
+      const ownedTag = info && info.owned
+        ? `<span style="font-size:9px;font-weight:700;color:#2e7d32;background:#e8f5e9;border-radius:5px;padding:1px 5px">✅ ${info.ivAtk}/${info.ivDef}/${info.ivHp}</span>`
+        : `<span style="font-size:9px;font-weight:700;color:#e65100;background:#fff3e0;border-radius:5px;padding:1px 5px">🆕 No obtenido</span>`;
+      return `<div style="display:flex;gap:8px;align-items:center;background:#f5f5f5;border-radius:8px;padding:6px 8px;flex:1;min-width:170px">
+        ${rrImgTag(m.n)}
+        <div style="min-width:0;flex:1">
+          <div style="font-size:12px;font-weight:800;color:#333;display:flex;align-items:center;flex-wrap:wrap;gap:4px">🌑 ${m.n} <span style="font-size:9.5px;font-weight:700;color:#1565c0;background:#e3f2fd;border-radius:5px;padding:1px 5px">${pctTxt}</span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:3px">${m.w.map(w=>`<span style="font-size:9.5px;font-weight:700;color:#c62828;background:#ffebee;border-radius:5px;padding:1px 5px">${rrW(w)}</span>`).join('')}${ownedTag}</div>
+        </div>
+      </div>`;
+    }).join('');
     return `<div style="margin-bottom:6px">
       <div style="font-size:10.5px;font-weight:700;color:#888;margin-bottom:3px">Slot ${i+1}${opts.length>1?' (posibles)':''}</div>
       <div style="display:flex;flex-wrap:wrap;gap:6px">${monsHtml}</div>
     </div>`;
   }).join('');
-  return `<div style="background:#fff;border:1.5px solid #e0e0e0;border-radius:12px;padding:12px;margin-bottom:10px">
-    <div style="font-size:14px;font-weight:800;color:#212121">${c.n}</div>
+  const _key=(c.n||'').replace(/'/g,"\\'");
+  const pinBtn = `<button onclick="event.stopPropagation();rrTogglePin('${_key}')" title="Fijar" style="background:none;border:none;cursor:pointer;font-size:16px;line-height:1;padding:2px 4px;opacity:${pinned?1:.35}">📌</button>`;
+  return `<div style="background:#fff;border:1.5px solid ${pinned?'#ff9800':'#e0e0e0'};border-radius:12px;padding:12px;margin-bottom:10px">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px">
+      <div style="font-size:14px;font-weight:800;color:#212121">${c.n}</div>
+      ${pinBtn}
+    </div>
     ${c.r?`<div style="font-size:11px;font-weight:700;color:#607d8b;margin-bottom:6px">${c.r}</div>`:''}
     <div style="font-size:12.5px;font-style:italic;color:#555;margin:4px 0 10px">"${c.q}"${c.approx?' <span style="font-size:10px;color:#e65100;font-style:normal;font-weight:700">(traducción aproximada, no confirmada)</span>':''}</div>
     ${slotsHtml || '<div style="font-size:11px;color:#aaa">Sin datos de lineup confirmados</div>'}
@@ -5936,8 +6045,14 @@ function rrCardHtml(c){
 function renderRocketRewards(){
   const box = document.getElementById('rr-list');
   if(!box) return;
-  const list = RR_DATA[_rrTab] || [];
-  box.innerHTML = list.map(rrCardHtml).join('');
+  rrLoadPinned();
+  const p = gp(ST.cur);
+  const list = (RR_DATA[_rrTab] || []).slice();
+  const pinned = list.filter(c=>_rrPinned[c.n]);
+  const rest = list.filter(c=>!_rrPinned[c.n]);
+  if(_rrTab==='grunts' && p) rest.sort((a,b)=>rrPriorityScore(a,p)-rrPriorityScore(b,p));
+  const pinnedHtml = pinned.length ? `<div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;color:#ff9800;margin-bottom:4px">📌 FIJADOS</div>${pinned.map(c=>rrCardHtml(c,true)).join('')}</div>` : '';
+  box.innerHTML = pinnedHtml + rest.map(c=>rrCardHtml(c,false)).join('');
 }
 function openRocketRewards() {
   renderRocketRewards();
